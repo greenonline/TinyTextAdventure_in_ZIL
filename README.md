@@ -1,7 +1,6 @@
 # TinyTextAdventure_in_ZIL
 A tiny adventure in ZIL
 
-
 ## Preamble
 
 This is the code for the ZIL port, as written by [Jason Compton](https://www.youtube.com/channel/UCgi9B58U9QWxuZV9Du6l5LQ) in the video [Tiny Text Adventure: From ZX81 to VIC-20 to Ultimate 64](https://www.youtube.com/watch?v=_d2g5BXdyfU).
@@ -64,7 +63,7 @@ Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/zilf-0.11.1/host/fx
 %
 ```
 
-I guess the installer for `dotnet` might be easier, as it should set the paths? However, the installer requires MacOS 12. Catalina just isn't good enough. So, I gave up. Pontless!!!!
+I guess the installer for `dotnet` might be easier, as it should set the paths? However, the installer requires MacOS 12. Catalina just isn't good enough. So, I gave up. Ponitless!!!!
 
 Trying 9.0.2, and 9.0.0 RC1, resulted in the same issue.
 
@@ -94,7 +93,7 @@ The library libhostfxr.dylib was found, but loading it from /Users/macbook/dotne
 Failed to resolve libhostfxr.dylib [/Users/macbook/dotnet/host/fxr/9.0.11/libhostfxr.dylib]. Error code: 0x80008082
 ```
 
-I ended up installing a Ubuntu 24.04.3 LTS VM on VirtualBox
+I tried up installing an Ubuntu 24.04.3 LTS VM on VirtualBox, but my Mac slowed to a crawl.
 
 I ended up just using the online parser at [zilf.io - New Project](https://zilf.io/project/new). At least the code below is now typo free!
 
