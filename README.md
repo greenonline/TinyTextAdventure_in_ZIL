@@ -7,6 +7,8 @@ This is the code for the ZIL port, as written by [Jason Compton](https://www.you
 
 As the ZIL code didn't seem to have been made available, I transcribed it and posted it here.
 
+One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com/WoLS9RmC/zilf-a-zil-compiler) to write it in C# and .NET? It was rather frustrating trying to get a version of ZILF to run on macOS Catalina (10.15.8).
+
 ## Links
 
  - [Tiny Text Adventure: From ZX81 to VIC-20 to Ultimate 64](https://www.youtube.com/watch?v=_d2g5BXdyfU)
@@ -33,13 +35,13 @@ This page, [https://github.com/taradinoc/zilf](https://github.com/taradinoc/zilf
  - `cd` into `bin/`
  - run `zilf yourfile.zil`
 
-Unfortunately, ony Apple Silicon build are available, not Intel, so you'll have to compile the source, if you have an older Mac.
+Unfortunately, only Apple Silicon build are available, not Intel, so you'll have to compile the source, if you have an older Mac.
 
 ```none
 cd ../../zilf-0.11.1
 ```
 
-You'll need [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/9.0). Luckily there is an x86 build of SDK 9.0.310. I downloaded the binaries not the pckage/installer. Then uncompress. Drag the `dotnet` binary into the `zilf-0.11.1/` directory.
+You'll need [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/9.0). Luckily there is an x86 build of SDK 9.0.310. I downloaded the binaries not the package/installer. Then uncompress *by double-clicking* the `.tar.gz` file. Drag the `dotnet` binary into the `zilf-0.11.1/` directory.
 
 ```none
 % ./dotnet build Zilf.sln
@@ -79,6 +81,13 @@ Following these intrructions from [install-macos.md](https://github.com/dotnet/c
 ~# dotnet --version
 ```
 
+Adjusting the env vars slightly
+
+```none
+~# export DOTNET_ROOT=~/downloads/dotnet
+~# export PATH=$PATH:~/dowloads/dotnet
+```
+
 This ended up resulting in the same `libc++.1.dylib` error:
 
 ```
@@ -93,9 +102,342 @@ The library libhostfxr.dylib was found, but loading it from /Users/macbook/dotne
 Failed to resolve libhostfxr.dylib [/Users/macbook/dotnet/host/fxr/9.0.11/libhostfxr.dylib]. Error code: 0x80008082
 ```
 
-I tried up installing an Ubuntu 24.04.3 LTS VM on VirtualBox, but my Mac slowed to a crawl.
+[dotnet 9 fails on macOS Catalina due to a missing symbol in libc++ #45382](https://github.com/dotnet/sdk/issues/45382)
 
-I ended up just using the online parser at [zilf.io - New Project](https://zilf.io/project/new). At least the code below is now typo free!
+ -  This issue states that [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) works on Catalina. I tried 8.0.417, which resulted in a new error:
+
+```none
+% ./dotnet --version
+Failed to load /Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib, 1): no suitable image found.  Did find:
+	/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
+An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23]
+```
+
+Trying [dotnet 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), similar error
+
+```none
+ % ./dotnet --version
+Failed to load /Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib, 1): no suitable image found.  Did find:
+	/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
+An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20]
+```
+
+[v6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+
+```none
+ % ./dotnet --version
+Failed to load /Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib, 1): no suitable image found.  Did find:
+	/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
+An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36]
+```
+
+It should also be noted that while `./dotnet` executes just fine, `./dotnet --version` causes the errors.
+
+It should be noted that v8, v7, and v6 also popped up a dialog saying the following.
+
+```none
+"Microsoft.NETCore.App.app" is damaged and can't be opened. You should move it to te bin
+```
+
+Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted whilst being expanded? Maybe double clicking isn't a good idea and `gunzip` and `tar` should be used, instead..?
+
+
+### Using `gunzip` and `tar`
+
+
+[v5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) was the last version without an `Arm64` download. Extracted using gubzip/tar (and not by double clicking):
+
+```none
+% ./dotnet --version
+5.0.408
+```
+
+
+It works! 
+
+Is the issue due to the double clicking and the Apple expansion/inflation? Retrying v6, using `gunzip` and `tar`, made it work this time:
+
+```none
+% gunzip dotnet-sdk-6.0.428-osx-x64.tar.gz
+% mkdir dotnet-sdk-6.0.428-osx-x64
+% mv dotnet-sdk-6.0.428-osx-x64.tar dotnet-sdk-6.0.428-osx-x64
+% cd dotnet-sdk-6.0.428-osx-x64
+% tar xvf dotnet-sdk-6.0.428-osx-x64.tar
+% ./dotnet --version
+6.0.428
+```
+
+Similarly for v7
+
+```none
+% cd ../dotnet-sdk-7.0.410-osx-x64        
+% gunzip dotnet-sdk-7.0.410-osx-x64.tar.gz
+% tar xvf dotnet-sdk-7.0.410-osx-x64.tar
+% ./dotnet --version
+7.0.410
+```
+
+Similarly for v8
+
+```none
+% gunzip dotnet-sdk-8.0.417-osx-x64.tar.gz                    
+% mkdir dotnet-sdk-8.0.417-osx-x64                           
+% mv dotnet-sdk-8.0.417-osx-x64.tar dotnet-sdk-8.0.417-osx-x64
+% cd dotnet-sdk-8.0.417-osx-x64                               
+% tar xvf dotnet-sdk-8.0.417-osx-x64.tar                      
+% ./dotnet --version
+8.0.417
+% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64 
+% dotnet --version
+```
+
+However, retrying for v9, as expected, is still broken
+
+```none
+% ./dotnet --version
+Failed to load /Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib, 1): Symbol not found: __ZNSt3__113basic_filebufIcNS_11char_traitsIcEEE4openEPKcj
+  Referenced from: /Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib (which was built for Mac OS X 12.0)
+  Expected in: /usr/lib/libc++.1.dylib
+
+The library libhostfxr.dylib was found, but loading it from /Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib failed
+  - Installing .NET prerequisites might help resolve this problem.
+     https://go.microsoft.com/fwlink/?linkid=2063366
+Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib]. Error code: 0x80008082
+```
+
+### Even earlier versions
+
+
+[v4 - missing](https://dotnet.microsoft.com/en-us/download/dotnet/4.0)
+
+
+
+
+[v3](https://dotnet.microsoft.com/en-us/download/dotnet/3.0)
+
+```none
+% gunzip dotnet-sdk-3.0.103-osx-x64.tar.gz
+% tar xvf dotnet-sdk-3.0.103-osx-x64.tar
+% ./dotnet --version
+3.0.103
+```
+
+
+
+### `brew`
+
+```none
+brew install dotnet
+```
+
+Resulted in an error:
+
+```none
+GC: Failed to initialize GCToOSInterface
+GC initialization failed with error 0x80004005
+Failed to create CoreCLR, HRESULT: 0x80004005
+```
+
+### Compiling Zilf!
+
+Now that dotnet v8 is working, we can move on to finally compiling, or trying to, ZILF.
+
+```none
+% cd ../zilf-0.11.1
+% dotnet build Zilf.sln
+```
+
+But `dotnet` v9 is required:
+
+```none
+/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/sdk/8.0.417/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets(166,5): error NETSDK1045: The current .NET SDK does not support targeting .NET 9.0.  Either target .NET 8.0 or lower, or use a version of the .NET SDK that supports .NET 9.0. Download the .NET SDK from https://aka.ms/dotnet/download [/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Common/Zilf.Common.csproj]
+```
+
+There were a total of 14 errors.
+
+Is it possible to change the target? 
+
+ - There is no mention of `9.0` in `Zilf.sln`.
+ - There is no mention of `9.0` in `Zilf.sln.DotSettings`.
+ - `src/Analyzers/ZilfAnalyzers.Test/ZilfAnalyzers.Test.csproj`
+   - `    <TargetFramework>net8.0</TargetFramework>`
+ - `src/Analyzers/ZilfAnalyzers/ZilfAnalyzers.csproj`
+   - `    <TargetFramework>net8.0</TargetFramework>`
+ - `src/Zilf.Playground/Zilf.Playground.csproj`
+   - Right click and select 'Show Package Contents'
+ - `src/Zapf.Parsing/Zapf.Parsing.csproj`
+ - `src/Zapf/Zapf.csproj`
+ - `src/Dezapf/Dezapf.csproj`
+ - `src/Zilf.Common/Zilf.Common.csproj`
+ - `src/Zilf/Zilf.csproj`
+ - `src/Zilf.Emit/Zilf.Emit.csproj`
+
+After changing the `target` to `net8.0`, from `net9.0`, there are now just 6 build errors, in the `test` directory, rather that the `src/` diretory:
+
+ - `test/Zilf.Tests/Zilf.Tests.csproj`
+ - `test/Zilf.Emit.Tests/Zilf.Emit.Tests.csproj`
+ - `test/Dezapf.Tests/Dezapf.Tests.csproj`
+ - `test/Zilf.Tests.Integration/Zilf.Tests.Integration.csproj`
+ - `test/Zilf.Common.Tests/Zilf.Common.Tests.csproj`
+ - `test/Zapf.Tests/Zapf.Tests.csproj`
+ 
+Now the build proceeds..!
+
+```none
+% dotnet build Zilf.sln
+  Determining projects to restore...
+  Restored /Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Emit/Zilf.Emit.csproj (in 4.66 sec).
+...
+```
+
+but dies with 4 errors:
+
+```none
+/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.WebUtilities 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Package Microsoft.AspNetCore.WebUtilities 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0) / browser-wasm. Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.WebUtilities 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0) / browser-wasm. Package Microsoft.AspNetCore.WebUtilities 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
+    0 Warning(s)
+    4 Error(s)
+```
+
+See also [Error After Upgrading the Blazor Project WASM to .Net 8 to .Net 9](https://learn.microsoft.com/en-us/answers/questions/2136286/error-after-upgrading-the-blazor-project-wasm-to-n)
+
+We need to find the lines of the form:
+
+```none
+<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
+<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all" />
+```
+
+In (right click and select 'Show Package Contents'):
+
+ - `/src/Zilf.Playground/Zilf.Playground.csproj`
+
+Changing
+```none
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.9" />
+    <PackageReference Include="System.Net.Http.Json" Version="9.0.9" />
+
+```
+
+to
+
+```none
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="8.0" />
+```
+
+and rebuild
+
+```none
+% dotnet build Zilf.sln
+...
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/test/Dezapf.Tests/Dezapf.Tests.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Zapf.Parsing/Zapf.Parsing.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Common/Zilf.Common.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Analyzers/ZilfSourceGenerators/ZilfSourceGenerators.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Analyzers/ZilfAnalyzers/ZilfAnalyzers.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
+    0 Warning(s)
+    6 Error(s)
+```
+
+See [Compiler Error CS1617](https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs1617)
+
+Running 
+
+```none
+dotnet exec "~/Downloads/dotnet-sdk-8.0.417-osx-x64/sdk/8.0.417Roslyn/bincore/csc.dll" -langversion:?
+```
+
+did not work
+
+I could not find any reference to `13` in:
+
+ - `Dezapf.Tests.csproj`
+ - `Zapf.Parsing.csproj`
+ - `Zilf.Common.csproj`
+ - `ZilfSourceGenerators.csproj`
+ - `ZilfAnalyzers.csproj`
+ - `WindowsInstaller.csproj`
+ - Nor in:
+   - `Zilf.sln`
+   - `Zilf.sln.DotSettings`
+
+It was in `Directory.Build.props` (although this sees to be a build generated file):
+
+```none
+    <LangVersion>13</LangVersion>
+```
+
+changing to 
+
+```none
+    <LangVersion>13.0</LangVersion>
+```
+
+did not fix the issue. So where is it originating? Seeing as the `13.0` was not changed back to `13`, maybe an older verson is required..? 
+
+From [Compiler Error CS1617](https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs1617), I changed `13.0` to `8.0`, but that was probably too far back, as 16 of these issues appeared:
+
+```none
+/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/obj/Debug/net8.0-windows/WindowsInstaller.GlobalUsings.g.cs(10,1): error CS8400: Feature 'global using directive' is not available in C# 8.0. Please use language version 10.0 or greater. [/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
+```
+
+Changing `8.0` to `10.0`, gave 10 errors:
+
+```none
+Feature 'collection expressions' is not available in C# 10.0. Please use language version 12.0 or greater. [/Users/macbook/Downloads/zilf-0.11.1/test/Zapf.Tests/Zapf.Tests.csproj]
+```
+
+Changing `10.0` to `12.0` - which is probably the best version, as it is preceding the dotnet v9 correspondance to language 13.0 - resulted in success:
+
+```none
+% dotnet build Zilf.sln
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Dezapf.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Dezapf.Tests.dll
+  Zilf.Common -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll
+  WindowsInstaller -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0-windows/WindowsInstaller.dll
+  Zapf.Parsing -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll
+  ZilfAnalyzers -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/ZilfAnalyzers.dll
+  ZilfSourceGenerators -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/netstandard2.0/ZilfSourceGenerators.dll
+  Zilf.Emit -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Emit.dll
+  Zilf.Common.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.Tests.dll
+  Zilf.Emit.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Emit.Tests.dll
+  Zapf -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/zapf.dll
+  Successfully created package '/Users/macbook/Downloads/zilf-0.11.1/bin/Debug/ZilfAnalyzers.1.0.0.nupkg'.
+  Dezapf -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Dezapf.dll
+  Zapf.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zapf.Tests.dll
+  ZilfAnalyzers.Test -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/ZilfAnalyzers.Test.dll
+  Zilf -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/zilf.dll
+  Zilf.Tests.Integration -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Tests.Integration.dll
+  Zilf.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Tests.dll
+  Zilf.Playground -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Playground.dll
+  Zilf.Playground (Blazor output) -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/wwwroot
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:01:25.79
+```
+
+However, does it work?
+
+Test coming soon..!
+
+### Using the online toolchain
+
+I tried installing an Ubuntu 24.04.3 LTS VM on VirtualBox, but my Mac slowed to a crawl.
+
+Before I managed to get dotnet v8 working (see above), I ended up just using the online parser at [zilf.io - New Project](https://zilf.io/project/new), with works well. At least the code below is now typo free!
 
 ## Code
 
