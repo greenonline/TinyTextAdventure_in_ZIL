@@ -768,6 +768,8 @@ the game will decribe any objects we put back on the corpse."
 
 ## Gotchas and conclusion
 
+Do **not** double click the `.tar.gz` file for `dotnet`, as it corrupts the contents. Use `gunzip` and `tar`.
+
 Remember to set the path to `dotnet` v8:
 
 ```none
@@ -782,7 +784,44 @@ Use `zilf` in the directory where it was created:
 ```
 
 
+### The working `zilf`
 
+I've made a compressed split tar file, of the built `zilf-0.11.1/bin/Debug/net8.0/` directory:
 
+```none
+tar cvzf - net8.0/ | split -b 20m - zilf_net8.0.tar.gz
+```
 
+To extract
 
+```none
+cat zilf_net8.0.tar.gz.* | tar xzvf -
+```
+
+However, the `zilf-0.11.1/zillib/` directory is also required. So...? There may be other files/directories required, so I is probably better to use the provided tools to create a package instead...
+
+### Making a package
+
+There is a PowerShell script `make-macos-package.ps1`, to create a Mac package.
+
+```none
+cd zilf-0.11.1
+sudo gem install fpm
+pwsh ./tools/package-all.ps1 -RuntimeIdentifiers osx-arm64 -Configuration Release
+pwsh ./tools/make-macos-package.ps1 -Source Package/Release/Stage/zilf-$env:ZILF_LONG_VERSION-osx-arm64 -Destination Package/Release/Packages -Version $env:ZILF_LONG_VERSION -Arch arm64
+```
+
+However `pwsh` gives an error:
+
+```none
+Failed to load /usr/local/microsoft/powershell/7/libhostfxr.dylib, error: dlopen(/usr/local/microsoft/powershell/7/libhostfxr.dylib, 1): Symbol not found: __ZNSt3__113basic_filebufIcNS_11char_traitsIcEEE4openEPKcj
+  Referenced from: /usr/local/microsoft/powershell/7/libhostfxr.dylib (which was built for Mac OS X 12.0)
+  Expected in: /usr/lib/libc++.1.dylib
+
+The library libhostfxr.dylib was found, but loading it from /usr/local/microsoft/powershell/7/libhostfxr.dylib failed
+  - Installing .NET prerequisites might help resolve this problem.
+     https://go.microsoft.com/fwlink/?linkid=2063366
+Failed to resolve libhostfxr.dylib [/usr/local/microsoft/powershell/7/libhostfxr.dylib]. Error code: 0x80008082
+```
+
+It's the ol' "built for macOS 12" issue raising its ugly head, yet again.
