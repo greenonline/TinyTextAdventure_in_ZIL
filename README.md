@@ -7,7 +7,7 @@ This is the code for the ZIL port, as written by [Jason Compton](https://www.you
 
 As the ZIL code didn't seem to have been made available, I transcribed it and posted it here.
 
-One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com/WoLS9RmC/zilf-a-zil-compiler) to write it in C# and .NET? It was rather frustrating trying to get a version of ZILF to run on macOS Catalina (10.15.8).
+One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com/WoLS9RmC/zilf-a-zil-compiler) to write ZILF in C# and .NET? It was rather frustrating trying to get a version of ZILF to run on macOS Catalina (10.15.8).
 
 ## Links
 
@@ -30,12 +30,12 @@ How does one go about setting up on the Mac? What binaries are required?
 This page, [https://github.com/taradinoc/zilf](https://github.com/taradinoc/zilf) was useful for getting started.
 
  - [Releses](https://foss.heptapod.net/zilf/zilf/-/releases)
-   - Get the macOS version tarball
+   - Get the macOS version tarball of `zilf`
  - Unzip
  - `cd` into `bin/`
  - run `zilf yourfile.zil`
 
-Unfortunately, only Apple Silicon build are available, not Intel, so you'll have to compile the source, if you have an older Mac.
+Unfortunately, only Apple Silicon builds of `zilf` are available, not Intel, so you'll have to compile the source, if you have an older Mac.
 
 ```none
 cd ../../zilf-0.11.1
