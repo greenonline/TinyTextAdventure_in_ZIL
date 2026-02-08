@@ -209,12 +209,10 @@ Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/dotnet-sdk-9.0.310-
 ### Even earlier versions
 
 
-[v4 - missing](https://dotnet.microsoft.com/en-us/download/dotnet/4.0)
+Unfortunately, [v4](https://dotnet.microsoft.com/en-us/download/dotnet/4.0) seems to be missing.
 
 
-
-
-[v3](https://dotnet.microsoft.com/en-us/download/dotnet/3.0)
+Using [v3](https://dotnet.microsoft.com/en-us/download/dotnet/3.0)
 
 ```none
 % gunzip dotnet-sdk-3.0.103-osx-x64.tar.gz
@@ -222,8 +220,6 @@ Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/dotnet-sdk-9.0.310-
 % ./dotnet --version
 3.0.103
 ```
-
-
 
 ### `brew`
 
@@ -239,9 +235,11 @@ GC initialization failed with error 0x80004005
 Failed to create CoreCLR, HRESULT: 0x80004005
 ```
 
+It would probably have installed the latest (v9?) version anyway, which would have been incompatible. It seems better to continue with the "working" v8.
+
 ### Compiling Zilf!
 
-Now that dotnet v8 is working, we can move on to finally compiling, or trying to, ZILF.
+Now that `dotnet` v8 is working, we can move on to finally compiling, or trying to, ZILF.
 
 ```none
 % cd ../zilf-0.11.1
@@ -316,6 +314,7 @@ In (right click and select 'Show Package Contents'):
  - `/src/Zilf.Playground/Zilf.Playground.csproj`
 
 Changing
+
 ```none
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" PrivateAssets="all" />
@@ -370,7 +369,7 @@ I could not find any reference to `13` in:
    - `Zilf.sln`
    - `Zilf.sln.DotSettings`
 
-It was in `Directory.Build.props` (although this sees to be a build generated file):
+It was in `Directory.Build.props` (although this seems to be a build generated file):
 
 ```none
     <LangVersion>13</LangVersion>
