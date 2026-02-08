@@ -802,7 +802,9 @@ However, the `zilf-0.11.1/zillib/` directory is also required. So...? There may 
 
 ### Making a package
 
-There is a PowerShell script `make-macos-package.ps1`, to create a Mac package.
+There is a PowerShell script `make-macos-package.ps1`, to create a Mac package. I installed `pwsh` via `brew` as this page recommends, [Install PowerShell on macOS](https://learn.microsoft.com/en-gb/powershell/scripting/install/install-powershell-on-macos?view=powershell-7.5)
+
+Taking the code from `zilf-0.11.1/.github/workflows/build-packages.yml`:
 
 ```none
 cd zilf-0.11.1
@@ -824,4 +826,6 @@ The library libhostfxr.dylib was found, but loading it from /usr/local/microsoft
 Failed to resolve libhostfxr.dylib [/usr/local/microsoft/powershell/7/libhostfxr.dylib]. Error code: 0x80008082
 ```
 
-It's the ol' "built for macOS 12" issue raising its ugly head, yet again.
+It's the ol' "*built for macOS 12*" issue raising its ugly head, yet again. An earlier build of `pwsh` might work, instead of using the `brew` version. Or `macports` could provide a still supported version.
+
+I gave up at this point. At least `zilf` is working and building `.zil` files.
