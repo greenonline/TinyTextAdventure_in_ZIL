@@ -254,6 +254,8 @@ But `dotnet` v9 is required:
 
 There were a total of 14 errors.
 
+#### Target incompatabilities
+
 Is it possible to change the target? 
 
  - There is no mention of `9.0` in `Zilf.sln`.
@@ -281,6 +283,8 @@ After changing the `target` to `net8.0`, from `net9.0`, there are now just 6 bui
  - `test/Zapf.Tests/Zapf.Tests.csproj`
  
 Now the build proceeds..!
+
+#### More incompatability - `WebAssembly` and `WebUtilites`
 
 ```none
 % dotnet build Zilf.sln
@@ -332,7 +336,9 @@ to
     <PackageReference Include="System.Net.Http.Json" Version="8.0" />
 ```
 
-and rebuild
+and rebuild.
+
+#### `langversion` incompatabilities
 
 ```none
 % dotnet build Zilf.sln
@@ -395,7 +401,9 @@ Changing `8.0` to `10.0`, gave 10 errors:
 Feature 'collection expressions' is not available in C# 10.0. Please use language version 12.0 or greater. [/Users/macbook/Downloads/zilf-0.11.1/test/Zapf.Tests/Zapf.Tests.csproj]
 ```
 
-Changing `10.0` to `12.0` - which is probably the best version, as it is preceding the dotnet v9 correspondance to language 13.0 - resulted in success:
+#### Success?
+
+Changing `10.0` to `12.0` – which is probably the best version, as it is preceding the dotnet v9 correspondance to language 13.0 – resulted in success:
 
 ```none
 % dotnet build Zilf.sln
@@ -428,7 +436,32 @@ Build succeeded.
 Time Elapsed 00:01:25.79
 ```
 
-However, does it work?
+However, does it work? The two UNIX binaries, `zilf` and `zapf`, are in `bin/debug/net8.0/` A lot of Microsoft and Windows Binaries are also created.
+
+```none
+% cp bin/Debug/net8.0/zilf /usr/local/bin
+% cp bin/Debug/net8.0/zapf /usr/local/bin
+% zilf
+The application to execute does not exist: '/usr/local/bin/zilf.dll'.
+% cp bin/Debug/net8.0/zilf.dll /usr/local/bin 
+% zilf
+A fatal error was encountered. The library 'libhostpolicy.dylib' required to execute the application was not found in '/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64'.
+Failed to run as a self-contained app.
+  - The application was run as a self-contained app because '/usr/local/bin/zilf.runtimeconfig.json' was not found.
+  - If this should be a framework-dependent app, add the '/usr/local/bin/zilf.runtimeconfig.json' file and specify the appropriate framework.
+```
+
+Hmmm, could end up moving a lot of shite around. Running from the `zilf-0.11.1/` directory yields better results, and a REPL:
+
+```none
+% bin/debug/net8.0/zilf
+ZILF 0.11.1 built 08/02/2026 19:37:13
+> quit
+QUIT
+> exit
+exit
+> 
+```
 
 Test coming soon..!
 
@@ -436,7 +469,7 @@ Test coming soon..!
 
 I tried installing an Ubuntu 24.04.3 LTS VM on VirtualBox, but my Mac slowed to a crawl.
 
-Before I managed to get dotnet v8 working (see above), I ended up just using the online parser at [zilf.io - New Project](https://zilf.io/project/new), with works well. At least the code below is now typo free!
+Before I managed to get `dotnet` v8 working (see above), I ended up just using the online parser at [zilf.io - New Project](https://zilf.io/project/new), which works well. At least the code below is now typo free!
 
 ## Code
 
