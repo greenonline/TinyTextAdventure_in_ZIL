@@ -1,11 +1,11 @@
 # TinyTextAdventure_in_ZIL
-A tiny adventure in ZIL
+A tiny text adventure in ZIL
 
 ## Preamble
 
-This is the code for the ZIL port, as written by [Jason Compton](https://www.youtube.com/channel/UCgi9B58U9QWxuZV9Du6l5LQ) in the video [Tiny Text Adventure: From ZX81 to VIC-20 to Ultimate 64](https://www.youtube.com/watch?v=_d2g5BXdyfU).
+This is the code for the ZIL port of TinyTextAdventure, `tenline.zil`, as written by [Jason Compton](https://www.youtube.com/channel/UCgi9B58U9QWxuZV9Du6l5LQ) in the video [Tiny Text Adventure: From ZX81 to VIC-20 to Ultimate 64](https://www.youtube.com/watch?v=_d2g5BXdyfU).
 
-As the ZIL code didn't seem to have been made available, I transcribed it and posted it here.
+As the ZIL code didn't seem to have been made available, I transcribed it and posted it here. Skip to the bottom of the page for the ZIL port code, if you want to avoid having to read about trying to get `zilf` working on a Mac running Catalina.
 
 One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com/WoLS9RmC/zilf-a-zil-compiler) to write ZILF in C# and .NET? It was rather frustrating trying to get a version of ZILF to run on macOS Catalina (10.15.8).
 
@@ -139,6 +139,10 @@ It should be noted that v8, v7, and v6 also popped up a dialog saying the follow
 "Microsoft.NETCore.App.app" is damaged and can't be opened. You should move it to te bin
 ```
 
+[![Microsoft Core damaged dialog][1]][1]
+
+  [1]: xtras/images/MicroSoftCoreDamaged.png
+
 Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted whilst being expanded? Maybe double clicking isn't a good idea and `gunzip` and `tar` should be used, instead..?
 
 
@@ -240,6 +244,15 @@ It would probably have installed the latest (v9?) version anyway, which would ha
 ### Compiling Zilf!
 
 Now that `dotnet` v8 is working, we can move on to finally compiling, or trying to, ZILF.
+
+First, ensure that your paths to `dotnet` are correct:
+
+```none
+% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
+```
+
+Now build `zilf`, following the instructions in the README for `zilf`:
 
 ```none
 % cd ../zilf-0.11.1
@@ -436,7 +449,7 @@ Build succeeded.
 Time Elapsed 00:01:25.79
 ```
 
-However, does it work? The two UNIX binaries, `zilf` and `zapf`, are in `bin/debug/net8.0/` A lot of Microsoft and Windows Binaries are also created.
+However, does it work? The two UNIX binaries, `zilf` and `zapf`, are in `bin/debug/net8.0/` A lot of Microsoft and Windows binaries are also created. IN all 108 MB of code was generated! Who said M\$ weren't sparing with their code?!?!
 
 ```none
 % cp bin/Debug/net8.0/zilf /usr/local/bin
@@ -451,7 +464,7 @@ Failed to run as a self-contained app.
   - If this should be a framework-dependent app, add the '/usr/local/bin/zilf.runtimeconfig.json' file and specify the appropriate framework.
 ```
 
-Hmmm, could end up moving a lot of shite around. Running from the `zilf-0.11.1/` directory yields better results, and a REPL:
+Hmmm, could end up moving a lot of shite around. Running from the `zilf-0.11.1/` directory yields much better results, and a REPL:
 
 ```none
 % bin/debug/net8.0/zilf
@@ -463,7 +476,109 @@ exit
 > 
 ```
 
-Test coming soon..!
+and finally compiling the TinyTextAdventure ZIL code:
+
+```none
+% ~/Downloads/zilf-0.11.1/bin/debug/net8.0/zilf  tenline.zil 
+ZILF 0.11.1 built 08/02/2026 19:37:13
+```
+
+#### Moving everything?
+
+Moving over the still missing files to `/usr/local/bin`:
+
+```none
+% cp bin/Debug/net8.0/zilf.runtimeconfig.json /usr/local/bin
+% cp bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+% cp bin/Debug/net8.0/ReadLine.dll /usr/local/bin 
+```
+
+results in a REPL:
+
+```none
+ % zilf
+ZILF 0.11.1 built 08/02/2026 19:37:13
+> 
+```
+
+However, trying to compile results in, yet another, missing file:
+
+```none
+% zilf tenline.zil 
+ZILF 0.11.1 built 08/02/2026 19:37:13
+file not found: Zilf.Emit, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null
+```
+So, copying over to `/usr/local/bin/`:
+
+```none
+% cp bin/Debug/net8.0/Zilf.Emit.dll /usr/local/bin 
+% zilf tenline.zil      
+ZILF 0.11.1 built 08/02/2026 19:37:13
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/tenline.zil:27: INSERT-FILE: file not found: parser
+
+1 error
+
+```
+
+Note: `parser.zil` is in `zillib/`.
+
+##### Summary
+
+You would need to move *at least* 7 files:
+
+```none
+% cp bin/Debug/net8.0/zilf /usr/local/bin
+% cp bin/Debug/net8.0/zapf /usr/local/bin
+% cp bin/Debug/net8.0/zilf.dll /usr/local/bin 
+% cp bin/Debug/net8.0/zilf.runtimeconfig.json /usr/local/bin
+% cp bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+% cp bin/Debug/net8.0/ReadLine.dll /usr/local/bin 
+% cp bin/Debug/net8.0/Zilf.Emit.dll /usr/local/bin 
+```
+
+Note that `parser.zil` should be copied to your ZIL port source directory, i.e. the directory containing `tenline.zil`, and *not* `/usr/local/bin/`. 
+
+However, even then, you get many 'unassigned atom' and missing file errors:
+
+```none
+ % zilf tenline.zil
+ZILF 0.11.1 built 08/02/2026 19:37:13
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:6: USE: file not found: QQ
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:7: USE: file not found: LIBMSG
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:8: USE: file not found: LIBMSG-DEFAULTS
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0128] /Users/macbook/Documents/TandT/ZIL/parser.zil:337: DEFMAC: arg 2: expected LIST
+  in EVAL called at /Users/macbook/Documents/TandT/ZIL/parser.zil:337
+  in MAPF called at /Users/macbook/Documents/TandT/ZIL/parser.zil:335
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:580: INSERT-FILE: file not found: orphan
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:583: INSERT-FILE: file not found: pseudo
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:586: INSERT-FILE: file not found: pronouns
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/parser.zil:588: calling unassigned atom: PRONOUN
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/parser.zil:594: calling unassigned atom: PRONOUN
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/parser.zil:599: calling unassigned atom: PRONOUN
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/parser.zil:605: calling unassigned atom: PRONOUN
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/parser.zil:611: calling unassigned atom: FINISH-PRONOUNS
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:1681: INSERT-FILE: file not found: scope
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:3134: INSERT-FILE: file not found: events
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/parser.zil:3136: INSERT-FILE: file not found: verbs
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/tenline.zil:27
+15 errors
+```
+
+For this reason, I stopped trying to move the files to `/usr/local/bin/`, and just used the `zilf` binary in place within the `bin/debug/net8.0/` directory, as is. 
 
 ### Using the online toolchain
 
@@ -472,6 +587,10 @@ I tried installing an Ubuntu 24.04.3 LTS VM on VirtualBox, but my Mac slowed to 
 Before I managed to get `dotnet` v8 working (see above), I ended up just using the online parser at [zilf.io - New Project](https://zilf.io/project/new), which works well. At least the code below is now typo free!
 
 ## Code
+
+(If you have read everything this far, very well done!)
+
+This is the ZIL port of the **TinyTextAdventure**:
 
 
 ```none
@@ -644,6 +763,24 @@ the game will decribe any objects we put back on the corpse."
 
 "And that's all there is to it."
 ```
+
+
+
+## Gotchas and conclusion
+
+Remember to set the path to `dotnet` v8:
+
+```none
+% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
+```
+
+Use `zilf` in the directory where it was created:
+
+```none
+% export PATH=$PATH:~/Downloads/zilf-0.11.1/bin/debug/net8.0
+```
+
 
 
 
