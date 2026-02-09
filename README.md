@@ -273,10 +273,11 @@ Is it possible to change the target?
 
  - There is no mention of `9.0` in `Zilf.sln`.
  - There is no mention of `9.0` in `Zilf.sln.DotSettings`.
+
+However, in each of the following files there is the line, `<TargetFramework>net9.0</TargetFramework>`:
+
  - `src/Analyzers/ZilfAnalyzers.Test/ZilfAnalyzers.Test.csproj`
-   - `    <TargetFramework>net8.0</TargetFramework>`
  - `src/Analyzers/ZilfAnalyzers/ZilfAnalyzers.csproj`
-   - `    <TargetFramework>net8.0</TargetFramework>`
  - `src/Zilf.Playground/Zilf.Playground.csproj`
    - Right click and select 'Show Package Contents'
  - `src/Zapf.Parsing/Zapf.Parsing.csproj`
@@ -449,7 +450,7 @@ Build succeeded.
 Time Elapsed 00:01:25.79
 ```
 
-However, does it work? The two UNIX binaries, `zilf` and `zapf`, are in `bin/debug/net8.0/` A lot of Microsoft and Windows binaries are also created. IN all 108 MB of code was generated! Who said M\$ weren't sparing with their code?!?!
+However, does it work? The two UNIX binaries, `zilf` and `zapf`, are in `bin/debug/net8.0/` A lot of Microsoft and Windows binaries are also created. In all, around 108 MB of code was generated! Who said M\$ weren't sparing with their code?!?!
 
 ```none
 % cp bin/Debug/net8.0/zilf /usr/local/bin
@@ -768,6 +769,8 @@ the game will decribe any objects we put back on the corpse."
 
 ## Gotchas and conclusion
 
+Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
+
 Do **not** double click the `.tar.gz` file for `dotnet`, as it corrupts the contents. Use `gunzip` and `tar`.
 
 Remember to set the path to `dotnet` v8:
@@ -800,6 +803,8 @@ cat zilf_net8.0.tar.gz.* | tar xzvf -
 
 However, the `zilf-0.11.1/zillib/` directory is also required. So...? There may be other files/directories required, so I is probably better to use the provided tools to create a package instead...
 
+See [Create a tar archive split into blocks of a maximum size](https://unix.stackexchange.com/q/61774/97255).
+
 ### Making a package
 
 There is a PowerShell script `make-macos-package.ps1`, to create a Mac package. I installed `pwsh` via `brew` as this page recommends, [Install PowerShell on macOS](https://learn.microsoft.com/en-gb/powershell/scripting/install/install-powershell-on-macos?view=powershell-7.5)
@@ -829,3 +834,17 @@ Failed to resolve libhostfxr.dylib [/usr/local/microsoft/powershell/7/libhostfxr
 It's the ol' "*built for macOS 12*" issue raising its ugly head, yet again. An earlier build of `pwsh` might work, instead of using the `brew` version. Or `macports` could provide a still supported version.
 
 I gave up at this point. At least `zilf` is working and building `.zil` files.
+
+### Fixed source code
+
+The easiest solution seemed to be to just fix the source code, to make it compatible with `dotnet` v8, instead of v9.
+
+I have placed this modified source code in [xtras/src](/xtras/src/).
+
+You can unzip it and build it, using `dotnet` v8, with the following command:
+
+
+```none
+dotnet build Zilf.sln
+```
+
