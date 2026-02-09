@@ -785,14 +785,16 @@ the game will decribe any objects we put back on the corpse."
 
 Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
 
-To expand the `dotnet` xompressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
+To expand the `dotnet` compressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
 
-Remember to set the path to `dotnet` v8:
+Remember to set the path to `dotnet` v8, if compiling, or just *using*, `zilf`:
 
 ```none
 % export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
 % export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
 ```
+
+Note: Even when compiled, you *still* have to set the path and root environment variables of `DOTNET`, in order to use `zilf`.
 
 Use `zilf` in the directory where it was created:
 
@@ -815,7 +817,7 @@ To extract
 cat zilf_net8.0.tar.gz.* | tar xzvf -
 ```
 
-However, the `zilf-0.11.1/zillib/` directory is also required. So...? There may be other files/directories required, so I is probably better to use the provided tools to create a package instead...
+However, the `zilf-0.11.1/zillib/` directory is also required. So...? There may be other files/directories required, so it is probably better to use the provided tools to create a package instead...
 
 See [Create a tar archive split into blocks of a maximum size](https://unix.stackexchange.com/q/61774/97255).
 
@@ -862,3 +864,10 @@ You can unzip it and build it, using `dotnet` v8, with the following command:
 dotnet build Zilf.sln
 ```
 
+You will still need to set the three environment variables first, though (as well as installing `dotnet`). I also placed all ZIL related files and directories in a `ZILF` directory:
+
+```none
+% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0
+```
