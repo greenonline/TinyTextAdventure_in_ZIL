@@ -873,33 +873,11 @@ the game will decribe any objects we put back on the corpse."
 "And that's all there is to it."
 ```
 
-
-
-## Gotchas and conclusion
-
-Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
-
-To expand the `dotnet` compressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
-
-Remember to set the path to `dotnet` v8, if compiling, or just *using*, `zilf`:
-
-```none
-% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
-```
-
-Note: Even when compiled, you *still* have to set the path and root environment variables of `DOTNET`, in order to use `zilf`.
-
-Use `zilf` in the directory where it was created:
-
-```none
-% export PATH=$PATH:~/Downloads/zilf-0.11.1/bin/debug/net8.0
-```
-
+## `zilf` for Catalina
 
 ### The working `zilf`
 
-I've made a compressed split tar file, of the built `zilf-0.11.1/bin/Debug/net8.0/` directory:
+I made a compressed split tar file, of the built `zilf-0.11.1/bin/Debug/net8.0/` directory:
 
 ```none
 tar cvzf - net8.0/ | split -b 20m - zilf_net8.0.tar.gz
@@ -965,3 +943,35 @@ You will still need to set the three environment variables first, though (as wel
 % export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
 % export PATH=$PATH:~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0
 ```
+
+
+## Gotchas and conclusion
+
+Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
+
+To expand the `dotnet` compressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
+
+Remember to set the path to `dotnet` v8, if compiling, or just *using*, `zilf`:
+
+```none
+% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
+```
+
+Note: Even when compiled, you *still* have to set the path and root environment variables of `DOTNET`, in order to use `zilf`.
+
+Use `zilf` in the directory where it was created:
+
+```none
+% export PATH=$PATH:~/Downloads/zilf-0.11.1/bin/debug/net8.0
+```
+
+However, to finish off the build by using `zapf` you will need to copy some files to `/usr/local/bin/`:
+
+```none
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+```
+
