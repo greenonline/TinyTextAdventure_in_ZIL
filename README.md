@@ -520,7 +520,6 @@ ZILF 0.11.1 built 08/02/2026 19:37:13
 [error MDL0604] /Users/macbook/Documents/TandT/ZIL/tenline.zil:27: INSERT-FILE: file not found: parser
 
 1 error
-
 ```
 
 Note: `parser.zil` is in `zillib/`.
@@ -539,7 +538,7 @@ You would need to move *at least* 7 files:
 % cp bin/Debug/net8.0/Zilf.Emit.dll /usr/local/bin 
 ```
 
-Note that `parser.zil` should be copied to your ZIL port source directory, i.e. the directory containing `tenline.zil`, and *not* `/usr/local/bin/`. 
+Note that `parser.zil` should be copied to your ZIL port source directory, i.e. the directory containing `tenline.zil`, and *not* `/usr/local/bin/` [Edit - This is actually incorrect as files from `zillib/` need to be placed in `/usr/local/bin/zillib/`, see below]. 
 
 However, even then, you get many 'unassigned atom' and missing file errors:
 
@@ -583,6 +582,25 @@ ZILF 0.11.1 built 08/02/2026 19:37:13
 
 For this reason, I stopped trying to move the files to `/usr/local/bin/`, and just used the `zilf` binary in place within the `bin/debug/net8.0/` directory, as is. 
 
+However, in order to fix the errors above, you need to make a `zillib/` directory in `/usr/local/bin/`, and copy over all of the `.zil` files, and a `.mud` file, from the `zillib/` directory in the `zilf-0.11.1` source directory:
+
+```none
+mkdir -p /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/parser.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/verbs.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/scope.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/events.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/orphan.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/pseudo.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/pronouns.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/libmsg.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/libmsg-defaults.zil /usr/local/bin/zillib
+cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/zillib/qq.mud /usr/local/bin/zillib
+```
+
+Plese refer to the `Makefile` at the bottom of the page, for a list of all files that need to be copied to `/usr/local/bin`.
+
+
 ### Running `zilf` from its build directory
 
 Running `zilf` from the `zilf-0.11.1/` directory yields much better results, and a REPL:
@@ -621,7 +639,7 @@ What that *readme* is missing, is the following step which is shown in [ZIL - Wh
 The application to execute does not exist: '/usr/local/bin/zapf.dll'.
 ```
 
-There seems to be a hardcoded path to `usr/local/bin` as `zapf.dll` is in the `PATH`:
+There seems to be a hardcoded path to `/usr/local/bin` as `zapf.dll` *is* in the `PATH`:
 
 ```none
  % echo $PATH
@@ -681,7 +699,7 @@ tenline.zap		tenline_data.zap	tenline_str.zap
 
 #### Summary
 
-You need to move these files for `zapf` to work:
+Even though you may be running `zilf` from the build directory, you will still need to copy the following files to `usr/local/bin/`, in order for `zapf` to work:
 
 ```none
 % cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
@@ -983,24 +1001,31 @@ This installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/lo
 
 
 ```none
-RM            = rm
+PROGRAM               = zilf
 
-MAKE          = make
+DOTNET                = dotnet
 
-DEST          = /usr/local/bin
+SRCS                  = Zilf.sln
 
-ORIG          = /Users/macbook/Downloads/ZILF/zilf-0.11.1
+RM                    = rm
 
-DOTNET        = $(ORIG)/bin/Debug/net8.0
+MAKE                  = make
 
-ORIG_ZILLIB   = $(ORIG)/zillib
+DEST                  = /usr/local/bin
 
-DEST_ZILLIB   = $(DEST)/zillib
+ZILF_SRC_DIR          = /Users/macbook/Downloads/ZILF/zilf-0.11.1
 
-MAKE          = make
+DOTNET_BUILD          = $(ZILF_SRC_DIR)/bin/Debug/net8.0
+
+ZILF_SRC_DIR_ZILLIB   = $(ZILF_SRC_DIR)/zillib
+
+DEST_ZILLIB           = $(DEST)/zillib
 
 all:            
 		$(MAKE) install
+
+$(PROGRAM):	$(SRCS)
+		$(DOTNET) build $(SRCS)
 
 install:         
 		$(MAKE) install_zilf
@@ -1015,33 +1040,33 @@ clean:
 		$(MAKE) clean_zillib
 
 install_zilf:
-		cp $(DOTNET)/zilf $(DEST)
-		cp $(DOTNET)/zilf.dll $(DEST)
-		cp $(DOTNET)/zilf.runtimeconfig.json $(DEST)
-		cp $(DOTNET)/Zilf.Emit.dll $(DEST)
-		cp $(DOTNET)/ReadLine.dll $(DEST)
+		cp $(DOTNET_BUILD)/zilf $(DEST)
+		cp $(DOTNET_BUILD)/zilf.dll $(DEST)
+		cp $(DOTNET_BUILD)/zilf.runtimeconfig.json $(DEST)
+		cp $(DOTNET_BUILD)/Zilf.Emit.dll $(DEST)
+		cp $(DOTNET_BUILD)/ReadLine.dll $(DEST)
 
 install_zapf:
-		cp $(DOTNET)/zapf $(DEST)
-		cp $(DOTNET)/zapf.dll $(DEST)
-		cp $(DOTNET)/zapf.runtimeconfig.json $(DEST)
-		cp $(DOTNET)/Zapf.Parsing.dll $(DEST)
+		cp $(DOTNET_BUILD)/zapf $(DEST)
+		cp $(DOTNET_BUILD)/zapf.dll $(DEST)
+		cp $(DOTNET_BUILD)/zapf.runtimeconfig.json $(DEST)
+		cp $(DOTNET_BUILD)/Zapf.Parsing.dll $(DEST)
 
 install_common:
-		cp $(DOTNET)/Zilf.Common.dll $(DEST)
+		cp $(DOTNET_BUILD)/Zilf.Common.dll $(DEST)
 
 install_zillib:
 		mkdir -p $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/parser.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/verbs.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/scope.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/events.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/orphan.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/pseudo.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/pronouns.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/libmsg.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/libmsg-defaults.zil $(DEST_ZILLIB)
-		cp $(ORIG_ZILLIB)/qq.mud $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/parser.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/verbs.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/scope.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/events.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/orphan.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/pseudo.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/pronouns.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/libmsg.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/libmsg-defaults.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/qq.mud $(DEST_ZILLIB)
 
 clean_zilf:
 		rm $(DEST)/zilf
