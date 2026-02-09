@@ -27,6 +27,8 @@ One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com
 
 How does one go about setting up on the Mac? What binaries are required?
 
+Note: I placed all ZIL related files and directories in a directory named `ZILF/`, under my `~/Downloads/` directory, in order to keep all the files together.
+
 #### ZILF source code
 
 The readme of [zilf](https://github.com/taradinoc/zilf) was useful for getting started.
@@ -57,7 +59,7 @@ Then uncompress *by double-clicking* the `.tar.gz` file. Drag the `dotnet` binar
 
 ```none
 % ./dotnet build Zilf.sln
-Error: [/Users/macbook/Downloads/zilf-0.11.1/host/fxr] does not exist
+Error: [/Users/macbook/Downloads/ZILF/zilf-0.11.1/host/fxr] does not exist
 Failed to resolve libhostfxr.dylib [not found]. Error code: 0x80008083
 %
 ```
@@ -66,14 +68,14 @@ Dragging the `host` directory into the `zilf-0.11.1/` directory
 
 ```none
 % ./dotnet build Zilf.sln
-Failed to load /Users/macbook/Downloads/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib, error: dlopen(/Users/macbook/Downloads/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib, 1): Symbol not found: __ZNSt3__113basic_filebufIcNS_11char_traitsIcEEE4openEPKcj
-  Referenced from: /Users/macbook/Downloads/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib (which was built for Mac OS X 12.0)
+Failed to load /Users/macbook/Downloads/ZILF/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib, error: dlopen(/Users/macbook/Downloads/ZILF/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib, 1): Symbol not found: __ZNSt3__113basic_filebufIcNS_11char_traitsIcEEE4openEPKcj
+  Referenced from: /Users/macbook/Downloads/ZILF/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib (which was built for Mac OS X 12.0)
   Expected in: /usr/lib/libc++.1.dylib
 
-The library libhostfxr.dylib was found, but loading it from /Users/macbook/Downloads/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib failed
+The library libhostfxr.dylib was found, but loading it from /Users/macbook/Downloads/ZILF/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib failed
   - Installing .NET prerequisites might help resolve this problem.
      https://go.microsoft.com/fwlink/?linkid=2063366
-Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib]. Error code: 0x80008082
+Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/ZILF/zilf-0.11.1/host/fxr/9.0.12/libhostfxr.dylib]. Error code: 0x80008082
 %
 ```
 
@@ -96,8 +98,8 @@ Following these intrructions from [install-macos.md](https://github.com/dotnet/c
 Adjusting the env vars slightly
 
 ```none
-~# export DOTNET_ROOT=~/downloads/dotnet
-~# export PATH=$PATH:~/dowloads/dotnet
+~# export DOTNET_ROOT=~/downloads/ZILF/dotnet
+~# export PATH=$PATH:~/dowloads/ZILF/dotnet
 ```
 
 This ended up resulting in the same `libc++.1.dylib` error:
@@ -120,27 +122,27 @@ I tried 8.0.417, which resulted in a new, but different, error:
 
 ```none
 % ./dotnet --version
-Failed to load /Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib, 1): no suitable image found.  Did find:
-	/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
-An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23]
+Failed to load /Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib, 1): no suitable image found.  Did find:
+	/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
+An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23]
 ```
 
 Trying [dotnet 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), resulted in a similar error:
 
 ```none
  % ./dotnet --version
-Failed to load /Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib, 1): no suitable image found.  Did find:
-	/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
-An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20]
+Failed to load /Users/macbook/Downloads/ZILF/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/ZILF/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib, 1): no suitable image found.  Did find:
+	/Users/macbook/Downloads/ZILF/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/ZILF/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
+An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/ZILF/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20]
 ```
 
 Trying [v6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), likewise:
 
 ```none
  % ./dotnet --version
-Failed to load /Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib, 1): no suitable image found.  Did find:
-	/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
-An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36]
+Failed to load /Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib, error: dlopen(/Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib, 1): no suitable image found.  Did find:
+	/Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib: code signature in (/Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36/libhostpolicy.dylib) not valid for use in process using Library Validation: library load disallowed by system policy
+An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36]
 ```
 
 It should also be noted that while `./dotnet` executes just fine, `./dotnet --version` causes the errors.
@@ -203,8 +205,8 @@ Similarly for v8:
 % tar xvf dotnet-sdk-8.0.417-osx-x64.tar                      
 % ./dotnet --version
 8.0.417
-% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64 
+% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64 
 % dotnet --version
 ```
 
@@ -212,14 +214,14 @@ However, retrying for v9, as expected, is *still* broken (for Catalina):
 
 ```none
 % ./dotnet --version
-Failed to load /Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib, error: dlopen(/Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib, 1): Symbol not found: __ZNSt3__113basic_filebufIcNS_11char_traitsIcEEE4openEPKcj
-  Referenced from: /Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib (which was built for Mac OS X 12.0)
+Failed to load /Users/macbook/Downloads/ZILF/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib, error: dlopen(/Users/macbook/Downloads/ZILF/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib, 1): Symbol not found: __ZNSt3__113basic_filebufIcNS_11char_traitsIcEEE4openEPKcj
+  Referenced from: /Users/macbook/Downloads/ZILF/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib (which was built for Mac OS X 12.0)
   Expected in: /usr/lib/libc++.1.dylib
 
-The library libhostfxr.dylib was found, but loading it from /Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib failed
+The library libhostfxr.dylib was found, but loading it from /Users/macbook/Downloads/ZILF/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib failed
   - Installing .NET prerequisites might help resolve this problem.
      https://go.microsoft.com/fwlink/?linkid=2063366
-Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib]. Error code: 0x80008082
+Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/ZILF/dotnet-sdk-9.0.310-osx-x64/host/fxr/9.0.12/libhostfxr.dylib]. Error code: 0x80008082
 ```
 
 ### Even earlier versions
@@ -258,13 +260,13 @@ An alternative option might be to try `macports`, as it might have a Catalina co
 
 ### Compiling Zilf!
 
-Now that `dotnet` v8 is working, we can move on to finally compiling, or trying to, ZILF.
+Now that `dotnet` v8 is working, we can move on to finally compiling `zilf`, or at least try to.
 
 First, ensure that your paths to `dotnet` are correct:
 
 ```none
-% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
+% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
 ```
 
 Now build `zilf`, following the instructions in the README for `zilf`:
@@ -277,7 +279,7 @@ Now build `zilf`, following the instructions in the README for `zilf`:
 But `dotnet` v9 is required:
 
 ```none
-/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/sdk/8.0.417/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets(166,5): error NETSDK1045: The current .NET SDK does not support targeting .NET 9.0.  Either target .NET 8.0 or lower, or use a version of the .NET SDK that supports .NET 9.0. Download the .NET SDK from https://aka.ms/dotnet/download [/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Common/Zilf.Common.csproj]
+/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/sdk/8.0.417/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets(166,5): error NETSDK1045: The current .NET SDK does not support targeting .NET 9.0.  Either target .NET 8.0 or lower, or use a version of the .NET SDK that supports .NET 9.0. Download the .NET SDK from https://aka.ms/dotnet/download [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Common/Zilf.Common.csproj]
 ```
 
 There were a total of 14 errors.
@@ -318,17 +320,17 @@ Now the build proceeds..!
 ```none
 % dotnet build Zilf.sln
   Determining projects to restore...
-  Restored /Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Emit/Zilf.Emit.csproj (in 4.66 sec).
+  Restored /Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Emit/Zilf.Emit.csproj (in 4.66 sec).
 ...
 ```
 
 but dies with 4 errors:
 
 ```none
-/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
-/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.WebUtilities 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Package Microsoft.AspNetCore.WebUtilities 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
-/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0) / browser-wasm. Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
-/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.WebUtilities 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0) / browser-wasm. Package Microsoft.AspNetCore.WebUtilities 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/ZILF/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.WebUtilities 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Package Microsoft.AspNetCore.WebUtilities 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/ZILF/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0) / browser-wasm. Package Microsoft.AspNetCore.Components.WebAssembly 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/ZILF/zilf-0.11.1/Zilf.sln]
+/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Playground/Zilf.Playground.csproj : error NU1202: Package Microsoft.AspNetCore.WebUtilities 9.0.9 is not compatible with net8.0 (.NETCoreApp,Version=v8.0) / browser-wasm. Package Microsoft.AspNetCore.WebUtilities 9.0.9 supports: net9.0 (.NETCoreApp,Version=v9.0) [/Users/macbook/Downloads/ZILF/zilf-0.11.1/Zilf.sln]
     0 Warning(s)
     4 Error(s)
 ```
@@ -374,12 +376,12 @@ The rebuild resulted in some new errors:
 ```none
 % dotnet build Zilf.sln
 ...
-CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/test/Dezapf.Tests/Dezapf.Tests.csproj]
-CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Zapf.Parsing/Zapf.Parsing.csproj]
-CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Zilf.Common/Zilf.Common.csproj]
-CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Analyzers/ZilfSourceGenerators/ZilfSourceGenerators.csproj]
-CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/Analyzers/ZilfAnalyzers/ZilfAnalyzers.csproj]
-CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/test/Dezapf.Tests/Dezapf.Tests.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zapf.Parsing/Zapf.Parsing.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Zilf.Common/Zilf.Common.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Analyzers/ZilfSourceGenerators/ZilfSourceGenerators.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/Analyzers/ZilfAnalyzers/ZilfAnalyzers.csproj]
+CSC : error CS1617: Invalid option '13' for /langversion. Use '/langversion:?' to list supported values. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
     0 Warning(s)
     6 Error(s)
 ```
@@ -389,7 +391,7 @@ See [Compiler Error CS1617](https://learn.microsoft.com/en-us/dotnet/csharp/misc
 Running 
 
 ```none
-dotnet exec "~/Downloads/dotnet-sdk-8.0.417-osx-x64/sdk/8.0.417Roslyn/bincore/csc.dll" -langversion:?
+dotnet exec "~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64/sdk/8.0.417Roslyn/bincore/csc.dll" -langversion:?
 ```
 
 did not work
@@ -423,13 +425,13 @@ did not fix the issue. So where is it originating? Seeing as the `13.0` was not 
 From [Compiler Error CS1617](https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs1617), and looking at the valid values listed for "language", I changed `13.0` to `8.0`, but that was probably too far back, as 16 of these issues appeared:
 
 ```none
-/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/obj/Debug/net8.0-windows/WindowsInstaller.GlobalUsings.g.cs(10,1): error CS8400: Feature 'global using directive' is not available in C# 8.0. Please use language version 10.0 or greater. [/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
+/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/WindowsInstaller/obj/Debug/net8.0-windows/WindowsInstaller.GlobalUsings.g.cs(10,1): error CS8400: Feature 'global using directive' is not available in C# 8.0. Please use language version 10.0 or greater. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
 ```
 
 Changing `8.0` to `10.0`, gave 10 errors:
 
 ```none
-Feature 'collection expressions' is not available in C# 10.0. Please use language version 12.0 or greater. [/Users/macbook/Downloads/zilf-0.11.1/test/Zapf.Tests/Zapf.Tests.csproj]
+Feature 'collection expressions' is not available in C# 10.0. Please use language version 12.0 or greater. [/Users/macbook/Downloads/ZILF/zilf-0.11.1/test/Zapf.Tests/Zapf.Tests.csproj]
 ```
 
 #### Success?
@@ -440,25 +442,25 @@ Changing `10.0` to `12.0` – which is probably the best version, as it is prece
 % dotnet build Zilf.sln
   Determining projects to restore...
   All projects are up-to-date for restore.
-  Dezapf.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Dezapf.Tests.dll
-  Zilf.Common -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll
-  WindowsInstaller -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0-windows/WindowsInstaller.dll
-  Zapf.Parsing -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll
-  ZilfAnalyzers -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/ZilfAnalyzers.dll
-  ZilfSourceGenerators -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/netstandard2.0/ZilfSourceGenerators.dll
-  Zilf.Emit -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Emit.dll
-  Zilf.Common.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.Tests.dll
-  Zilf.Emit.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Emit.Tests.dll
-  Zapf -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/zapf.dll
-  Successfully created package '/Users/macbook/Downloads/zilf-0.11.1/bin/Debug/ZilfAnalyzers.1.0.0.nupkg'.
-  Dezapf -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Dezapf.dll
-  Zapf.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zapf.Tests.dll
-  ZilfAnalyzers.Test -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/ZilfAnalyzers.Test.dll
-  Zilf -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/zilf.dll
-  Zilf.Tests.Integration -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Tests.Integration.dll
-  Zilf.Tests -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Tests.dll
-  Zilf.Playground -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/Zilf.Playground.dll
-  Zilf.Playground (Blazor output) -> /Users/macbook/Downloads/zilf-0.11.1/bin/Debug/net8.0/wwwroot
+  Dezapf.Tests -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Dezapf.Tests.dll
+  Zilf.Common -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll
+  WindowsInstaller -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0-windows/WindowsInstaller.dll
+  Zapf.Parsing -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll
+  ZilfAnalyzers -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/ZilfAnalyzers.dll
+  ZilfSourceGenerators -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/netstandard2.0/ZilfSourceGenerators.dll
+  Zilf.Emit -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Emit.dll
+  Zilf.Common.Tests -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.Tests.dll
+  Zilf.Emit.Tests -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Emit.Tests.dll
+  Zapf -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll
+  Successfully created package '/Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/ZilfAnalyzers.1.0.0.nupkg'.
+  Dezapf -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Dezapf.dll
+  Zapf.Tests -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Tests.dll
+  ZilfAnalyzers.Test -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/ZilfAnalyzers.Test.dll
+  Zilf -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zilf.dll
+  Zilf.Tests.Integration -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Tests.Integration.dll
+  Zilf.Tests -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Tests.dll
+  Zilf.Playground -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Playground.dll
+  Zilf.Playground (Blazor output) -> /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/wwwroot
 
 Build succeeded.
     0 Warning(s)
@@ -476,7 +478,7 @@ However, does it work? The two UNIX binaries, `zilf` and `zapf`, are in `bin/deb
 The application to execute does not exist: '/usr/local/bin/zilf.dll'.
 % cp bin/Debug/net8.0/zilf.dll /usr/local/bin 
 % zilf
-A fatal error was encountered. The library 'libhostpolicy.dylib' required to execute the application was not found in '/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64'.
+A fatal error was encountered. The library 'libhostpolicy.dylib' required to execute the application was not found in '/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64'.
 Failed to run as a self-contained app.
   - The application was run as a self-contained app because '/usr/local/bin/zilf.runtimeconfig.json' was not found.
   - If this should be a framework-dependent app, add the '/usr/local/bin/zilf.runtimeconfig.json' file and specify the appropriate framework.
@@ -598,7 +600,7 @@ exit
 and finally compiling the TinyTextAdventure ZIL code:
 
 ```none
-% ~/Downloads/zilf-0.11.1/bin/debug/net8.0/zilf  tenline.zil 
+% ~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0/zilf  tenline.zil 
 ZILF 0.11.1 built 08/02/2026 19:37:13
 ```
 
@@ -623,8 +625,8 @@ There seems to be a hardcoded path to `usr/local/bin` as `zapf.dll` is in the `P
 
 ```none
  % echo $PATH
-/usr/local/opt/llvm/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/macbook/.cargo/bin:/Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0:/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
-% ls /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.*
+/usr/local/opt/llvm/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/macbook/.cargo/bin:/Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0:/Users/macbook/Downloads/ZILF/zilf/dotnet-sdk-8.0.417-osx-x64
+% ls /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.*
 zapf.dll                 zapf.runtimeconfig.json
 zapf.deps.json           zapf.pdb      
 ```
@@ -632,9 +634,9 @@ zapf.deps.json           zapf.pdb
 That is rather unfortunate. Manually copying `zapf.dll` to `/usr/local/bin/`,
 
 ```none
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
 macbook@Macbooks-MacBook-Pro ZIL % zapf tenline.zap
-A fatal error was encountered. The library 'libhostpolicy.dylib' required to execute the application was not found in '/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64'.
+A fatal error was encountered. The library 'libhostpolicy.dylib' required to execute the application was not found in '/Users/macbook/Downloads/ZILF/zilf/dotnet-sdk-8.0.417-osx-x64'.
 Failed to run as a self-contained app.
   - The application was run as a self-contained app because '/usr/local/bin/zapf.runtimeconfig.json' was not found.
   - If this should be a framework-dependent app, add the '/usr/local/bin/zapf.runtimeconfig.json' file and specify the appropriate framework.
@@ -645,13 +647,13 @@ This really does seem rather unfortunate, especially as I had previously given u
 Nowevertheless, soldiering on, regardless,
 
 ```none
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
 % zapf tenline.zap
 Unhandled exception. System.IO.FileNotFoundException: Could not load file or assembly 'Zapf.Parsing, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'. The system cannot find the file specified.
 
 File name: 'Zapf.Parsing, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'
 zsh: abort      zapf tenline.zap
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
 % zapf tenline.zap
 Unhandled exception. System.IO.FileNotFoundException: Could not load file or assembly 'Zilf.Common, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'. The system cannot find the file specified.
 
@@ -660,7 +662,7 @@ File name: 'Zilf.Common, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'
    at Zapf.Program.TryParseArgs(IReadOnlyList`1 args, Context& ctx)
    at Zapf.Program.Main(String[] args)
 zsh: abort      zapf tenline.zap
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin 
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin 
 % zapf tenline.zap
 ZAPF 0.11.1
 Reading tenline.zap
@@ -682,10 +684,10 @@ tenline.zap		tenline_data.zap	tenline_str.zap
 You need to move these files for `zapf` to work:
 
 ```none
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
 ```
 
 
@@ -936,12 +938,12 @@ You can unzip it and build it, using `dotnet` v8, with the following command:
 dotnet build Zilf.sln
 ```
 
-You will still need to set the three environment variables first, though (as well as installing `dotnet`). I also placed all ZIL related files and directories in a `ZILF` directory:
+You will still need to set the three environment variables first, though (as well as installing `dotnet`):
 
 ```none
-% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0
+% export DOTNET_ROOT=~/Downloads/ZILF/zilf/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/zilf/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/zilf/zilf-0.11.1/bin/debug/net8.0
 ```
 
 
@@ -954,24 +956,99 @@ To expand the `dotnet` compressed file, do **not** double click the `.tar.gz` fi
 Remember to set the path to `dotnet` v8, if compiling, or just *using*, `zilf`:
 
 ```none
-% export DOTNET_ROOT=~/Downloads/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/dotnet-sdk-8.0.417-osx-x64
+% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
 ```
 
 Note: Even when compiled, you *still* have to set the path and root environment variables of `DOTNET`, in order to use `zilf`.
 
-Use `zilf` in the directory where it was created:
+To use `zilf` in the directory where it was created, rather than /usrlocal/bin`, upate the `PATh` environment variable:
 
 ```none
-% export PATH=$PATH:~/Downloads/zilf-0.11.1/bin/debug/net8.0
+% export PATH=$PATH:~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0
 ```
 
-However, to finish off the build by using `zapf` you will need to copy some files to `/usr/local/bin/`:
+However, to finish off a build, by using `zapf`, you will need to copy some files to `/usr/local/bin/`:
 
 ```none
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
 ```
 
+### Makefile
+
+This installs, or removes, the ZILF and ZAPF files to `/usr/local/bin`:
+
+
+```none
+RM            = rm
+
+MAKE          = make
+
+DEST          = /usr/local/bin
+
+ORIG          = /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0
+
+MAKE          = make
+
+all:            
+		$(MAKE) install
+
+install:         
+		$(MAKE) install_zilf
+		$(MAKE) install_zapf
+		$(MAKE) install_common
+
+clean:         
+		$(MAKE) clean_zilf
+		$(MAKE) clean_zapf
+		$(MAKE) clean_common
+
+install_zilf:
+		cp $(ORIG)/zilf $(DEST)
+		cp $(ORIG)/zilf.dll $(DEST)
+		cp $(ORIG)/zilf.runtimeconfig.json $(DEST)
+		cp $(ORIG)/Zilf.Emit.dll $(DEST)
+		cp $(ORIG)/ReadLine.dll $(DEST)
+
+install_zapf:
+		cp $(ORIG)/zapf $(DEST)
+		cp $(ORIG)/zapf.dll $(DEST)
+		cp $(ORIG)/zapf.runtimeconfig.json $(DEST)
+		cp $(ORIG)/Zapf.Parsing.dll $(DEST)
+
+install_common:
+		cp $(ORIG)/Zilf.Common.dll $(DEST)
+
+clean_zilf:
+		rm $(DEST)/zilf
+		rm $(DEST)/zilf.dll
+		rm $(DEST)/zilf.runtimeconfig.json
+		rm $(DEST)/Zilf.Emit.dll
+		rm $(DEST)/ReadLine.dll
+
+clean_zapf:
+		rm $(DEST)/zapf
+		rm $(DEST)/zapf.dll
+		rm $(DEST)/zapf.runtimeconfig.json
+		rm $(DEST)/Zapf.Parsing.dll
+
+clean_common:
+		rm $(DEST)/Zilf.Common.dll
+```
+
+To install, enter one of the folloewing lines:
+
+```none
+make
+make all
+make install
+```
+
+To remove:
+
+```none
+make clean
+```
