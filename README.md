@@ -49,7 +49,7 @@ cd ../../zilf-0.11.1
 
 You'll also need [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/9.0). Luckily there is an x86 build of SDK 9.0.310. I downloaded the binaries not the package/installer. 
 
-### How NOT to do it
+### How NOT to do it - The "double click" mistake
 
 (Skip forward to the section **Using `gunzip` and `tar`** below, if you don't want to know what you ***shouldn't do***.)
 
@@ -114,9 +114,9 @@ The library libhostfxr.dylib was found, but loading it from /Users/macbook/dotne
 Failed to resolve libhostfxr.dylib [/Users/macbook/dotnet/host/fxr/9.0.11/libhostfxr.dylib]. Error code: 0x80008082
 ```
 
-[dotnet 9 fails on macOS Catalina due to a missing symbol in libc++ #45382](https://github.com/dotnet/sdk/issues/45382)
+Then I came across this Github issue, [dotnet 9 fails on macOS Catalina due to a missing symbol in libc++ #45382](https://github.com/dotnet/sdk/issues/45382). This issue states that [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) works on Catalina. 
 
- -  This issue states that [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) works on Catalina. I tried 8.0.417, which resulted in a new error:
+I tried 8.0.417, which resulted in a new, but different, error:
 
 ```none
 % ./dotnet --version
@@ -125,7 +125,7 @@ Failed to load /Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Micros
 An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-8.0.417-osx-x64/shared/Microsoft.NETCore.App/8.0.23]
 ```
 
-Trying [dotnet 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), similar error
+Trying [dotnet 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), resulted in a similar error:
 
 ```none
  % ./dotnet --version
@@ -134,7 +134,7 @@ Failed to load /Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Micros
 An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/dotnet-sdk-7.0.410-osx-x64/shared/Microsoft.NETCore.App/7.0.20]
 ```
 
-[v6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+Trying [v6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), likewise:
 
 ```none
  % ./dotnet --version
@@ -171,7 +171,7 @@ Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted 
 
 It works! 
 
-Is the file corruption issue, of the previous section, due to the double clicking and the Apple expansion/inflation? Retrying v6, using `gunzip` and `tar`, made it work this time:
+Is the file corruption issue, of the previous section, due to the double clicking and the Apple expansion/inflation? Retrying v6, but uncompressing using `gunzip` and `tar`, made it work this time:
 
 ```none
 % gunzip dotnet-sdk-6.0.428-osx-x64.tar.gz
@@ -227,7 +227,6 @@ Failed to resolve libhostfxr.dylib [/Users/macbook/Downloads/dotnet-sdk-9.0.310-
 
 Unfortunately, [v4](https://dotnet.microsoft.com/en-us/download/dotnet/4.0) seems to be missing.
 
-
 Using [v3](https://dotnet.microsoft.com/en-us/download/dotnet/3.0)
 
 ```none
@@ -239,11 +238,13 @@ Using [v3](https://dotnet.microsoft.com/en-us/download/dotnet/3.0)
 
 ### `brew`
 
+Attempting to install `dotnet` using `brew`:
+
 ```none
 brew install dotnet
 ```
 
-Resulted in an error:
+However, this, rather predictably, resulted in an error:
 
 ```none
 GC: Failed to initialize GCToOSInterface
@@ -251,7 +252,7 @@ GC initialization failed with error 0x80004005
 Failed to create CoreCLR, HRESULT: 0x80004005
 ```
 
-It would probably have installed the latest (v9?) version anyway, which would have been incompatible. It seems better to continue with the "working" v8.
+Homebrew would probably have installed the latest (v9?) version anyway, which would have been incompatible. It seems better to continue with the "working" v8.
 
 An alternative option might be to try `macports`, as it might have a Catalina compatible version of `dotnet`. However, as revealed below, I did not persue this option.
 
@@ -368,6 +369,8 @@ and rebuild.
 
 #### `langversion` incompatabilities
 
+The rebuild resulted in some new errors:
+
 ```none
 % dotnet build Zilf.sln
 ...
@@ -403,7 +406,7 @@ I could not find any reference to `13` in:
    - `Zilf.sln`
    - `Zilf.sln.DotSettings`
 
-It was in `Directory.Build.props` (although this seems to be a build generated file):
+However, there *was* a reference to `13` in `Directory.Build.props` (although, going by a recent modified time, this seems to be a build generated file):
 
 ```none
     <LangVersion>13</LangVersion>
@@ -415,9 +418,9 @@ changing to
     <LangVersion>13.0</LangVersion>
 ```
 
-did not fix the issue. So where is it originating? Seeing as the `13.0` was not changed back to `13`, maybe an older verson is required..? 
+did not fix the issue. So where is it originating? Seeing as the `13.0` was not changed back to `13`, maybe an older language verson is required..? 
 
-From [Compiler Error CS1617](https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs1617), I changed `13.0` to `8.0`, but that was probably too far back, as 16 of these issues appeared:
+From [Compiler Error CS1617](https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs1617), and looking at the valid values listed for "language", I changed `13.0` to `8.0`, but that was probably too far back, as 16 of these issues appeared:
 
 ```none
 /Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/obj/Debug/net8.0-windows/WindowsInstaller.GlobalUsings.g.cs(10,1): error CS8400: Feature 'global using directive' is not available in C# 8.0. Please use language version 10.0 or greater. [/Users/macbook/Downloads/zilf-0.11.1/src/WindowsInstaller/WindowsInstaller.csproj]
@@ -479,7 +482,7 @@ Failed to run as a self-contained app.
   - If this should be a framework-dependent app, add the '/usr/local/bin/zilf.runtimeconfig.json' file and specify the appropriate framework.
 ```
 
-Hmmm, could end up moving a lot of shite around. Running from the `zilf-0.11.1/` directory yields much better results, and a REPL:
+Hmmm, this could end up moving a lot of files around. Running from the `zilf-0.11.1/` directory yields much better results, and a REPL:
 
 ```none
 % bin/debug/net8.0/zilf
@@ -500,7 +503,7 @@ ZILF 0.11.1 built 08/02/2026 19:37:13
 
 #### Moving everything?
 
-Moving over the still missing files to `/usr/local/bin`:
+Attempting to continue with the installation of `zilf` and moving over the remaining missing files to `/usr/local/bin`:
 
 ```none
 % cp bin/Debug/net8.0/zilf.runtimeconfig.json /usr/local/bin
