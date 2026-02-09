@@ -906,7 +906,9 @@ cat zilf_net8.0.tar.gz.* | tar xzvf -
 
 However, the `zilf-0.11.1/zillib/` directory is also required. So...? There may be other files/directories required, so it is probably better to use the provided tools to create a package instead...
 
-See [Create a tar archive split into blocks of a maximum size](https://unix.stackexchange.com/q/61774/97255).
+#### Reference
+
+ - [Create a tar archive split into blocks of a maximum size](https://unix.stackexchange.com/q/61774/97255).
 
 ### Making a package
 
@@ -961,7 +963,7 @@ You will still need to set the three environment variables first, though (as wel
 
 ### Makefile
 
-This installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/local/bin`:
+This makefile installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/local/bin`. It can also install `dotnet` in your home directory, `~/`:
 
 
 ```none
@@ -969,9 +971,13 @@ PROGRAM               = zilf
 
 DOTNET                = dotnet
 
+DOTNET_DIR            = ~/$(DOTNET)
+
 SRCS                  = Zilf.sln
 
 RM                    = rm
+
+TAR                   = tar
 
 MAKE                  = make
 
@@ -1002,6 +1008,18 @@ clean:
 		$(MAKE) clean_zapf
 		$(MAKE) clean_common
 		$(MAKE) clean_zillib
+
+install_dotnet:
+		curl -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.417/dotnet-sdk-8.0.417-osx-x64.tar.gz
+		mkdir -p $(DOTNET_DIR)
+		$(TAR) -C $(DOTNET_DIR) -xf $(DOTNET).tar.gz
+		$(RM) $(DOTNET).tar.gz
+		export DOTNET_ROOT=$(DOTNET_DIR)
+		export PATH=$$PATH:$(DOTNET_DIR)
+		$(DOTNET) --version
+
+clean_dotnet:
+		$(RM) -rf $(DOTNET_DIR)
 
 install_zilf:
 		cp $(DOTNET_BUILD)/zilf $(DEST)
@@ -1060,6 +1078,7 @@ clean_zillib:
 		rm $(DEST_ZILLIB)/libmsg-defaults.zil
 		rm $(DEST_ZILLIB)/qq.mud
 		rmdir $(DEST_ZILLIB)
+
 ```
 
 To install, enter one of the folloewing lines:
@@ -1076,6 +1095,9 @@ To remove:
 make clean
 ```
 
+#### References
+
+ - [How to set child process' environment variable in Makefile](https://stackoverflow.com/q/23843106/4424636)
 
 
 ## Gotchas and conclusion
