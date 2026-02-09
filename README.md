@@ -145,23 +145,19 @@ Failed to load /Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/M
 An error occurred while loading required library libhostpolicy.dylib from [/Users/macbook/Downloads/ZILF/dotnet-sdk-6.0.428-osx-x64/shared/Microsoft.NETCore.App/6.0.36]
 ```
 
-It should also be noted that while `./dotnet` executes just fine, `./dotnet --version` causes the errors.
+It should be noted that while `./dotnet` executes just fine, `./dotnet --version` causes the errors.
 
-It should be noted that v8, v7, and v6 also popped up a dialog saying the following.
+It should also be noted that v8, v7, and v6 also popped up a dialog saying the following.
 
 ```none
-"Microsoft.NETCore.App.app" is damaged and can't be opened. You should move it to te bin
+"Microsoft.NETCore.App.app" is damaged and can't be opened. You should move it to the Bin.
 ```
 
 [![Microsoft Core damaged dialog][1]][1]
 
-  [1]: xtras/images/MicroSoftCoreDamaged.png
-
 Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted whilst being expanded? Maybe double clicking isn't a good idea and `gunzip` and `tar` should be used, instead..?
 
-
 ### Using `gunzip` and `tar`
-
 
 [v5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) was the last version without an `Arm64` download. Extracted using `gunzip`/`tar` (and *not* by double clicking):
 
@@ -169,7 +165,6 @@ Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted 
 % ./dotnet --version
 5.0.408
 ```
-
 
 It works! 
 
@@ -964,37 +959,6 @@ You will still need to set the three environment variables first, though (as wel
 % export PATH=$PATH:~/Downloads/ZILF/zilf/zilf-0.11.1/bin/debug/net8.0
 ```
 
-
-## Gotchas and conclusion
-
-Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
-
-To expand the `dotnet` compressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
-
-Remember to set the path to `dotnet` v8, if compiling, or just *using*, `zilf`:
-
-```none
-% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
-% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
-```
-
-Note: Even when compiled, you *still* have to set the path and root environment variables of `DOTNET`, in order to use `zilf`.
-
-To use `zilf` in the directory where it was created, rather than /usrlocal/bin`, upate the `PATh` environment variable:
-
-```none
-% export PATH=$PATH:~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0
-```
-
-However, to finish off a build, by using `zapf`, you will need to copy some files to `/usr/local/bin/`:
-
-```none
-% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
-% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
-```
-
 ### Makefile
 
 This installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/local/bin`:
@@ -1111,3 +1075,40 @@ To remove:
 ```none
 make clean
 ```
+
+
+
+## Gotchas and conclusion
+
+Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
+
+To expand the `dotnet` compressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
+
+Remember to set the path to `dotnet` v8, if compiling, or just *using*, `zilf`:
+
+```none
+% export DOTNET_ROOT=~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% export PATH=$PATH:~/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+```
+
+Note: Even when compiled, you *still* have to set the path and root environment variables of `DOTNET`, in order to use `zilf`.
+
+To use `zilf` in the directory where it was created, rather than `/usr/local/bin`, update the `PATH` environment variable:
+
+```none
+% export PATH=$PATH:~/Downloads/ZILF/zilf-0.11.1/bin/debug/net8.0
+```
+
+However, to finish off a build, by using `zapf`, you will need to copy some files to `/usr/local/bin/`:
+
+```none
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+```
+
+
+
+
+  [1]: xtras/images/MicroSoftCoreDamaged.png
