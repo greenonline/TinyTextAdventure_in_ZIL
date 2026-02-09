@@ -27,9 +27,11 @@ One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com
 
 How does one go about setting up on the Mac? What binaries are required?
 
+#### ZILF source code
+
 This page, [https://github.com/taradinoc/zilf](https://github.com/taradinoc/zilf) was useful for getting started.
 
- - [Releses](https://foss.heptapod.net/zilf/zilf/-/releases)
+ - [Releases](https://foss.heptapod.net/zilf/zilf/-/releases) – [ZILF 0.11.1](https://foss.heptapod.net/zilf/zilf/-/releases/0.11.1)
    - Get the macOS version tarball of `zilf`
  - Unzip
  - `cd` into `bin/`
@@ -37,11 +39,21 @@ This page, [https://github.com/taradinoc/zilf](https://github.com/taradinoc/zilf
 
 Unfortunately, only Apple Silicon builds of `zilf` are available, not Intel, so you'll have to compile the source, if you have an older Mac.
 
+Therefore, I downloaded, from the **Assets** section of [ZILF 0.11.1](https://foss.heptapod.net/zilf/zilf/-/releases/0.11.1), the [Source code (zip)](https://foss.heptapod.net/zilf/zilf/-/archive/0.11.1/zilf-0.11.1.zip), expanded and changed directory.
+
 ```none
 cd ../../zilf-0.11.1
 ```
 
-You'll need [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/9.0). Luckily there is an x86 build of SDK 9.0.310. I downloaded the binaries not the package/installer. Then uncompress *by double-clicking* the `.tar.gz` file. Drag the `dotnet` binary into the `zilf-0.11.1/` directory.
+#### `dotnet`
+
+You'll also need [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/9.0). Luckily there is an x86 build of SDK 9.0.310. I downloaded the binaries not the package/installer. 
+
+### How NOT to do it
+
+(Skip forward to the section **Using `gunzip` and `tar`** below, if you don't want to know what you ***shouldn't do***.)
+
+Then uncompress *by double-clicking* the `.tar.gz` file. Drag the `dotnet` binary into the `zilf-0.11.1/` directory.
 
 ```none
 % ./dotnet build Zilf.sln
@@ -149,7 +161,7 @@ Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted 
 ### Using `gunzip` and `tar`
 
 
-[v5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) was the last version without an `Arm64` download. Extracted using gubzip/tar (and not by double clicking):
+[v5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) was the last version without an `Arm64` download. Extracted using `gunzip`/`tar` (and *not* by double clicking):
 
 ```none
 % ./dotnet --version
@@ -159,7 +171,7 @@ Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted 
 
 It works! 
 
-Is the issue due to the double clicking and the Apple expansion/inflation? Retrying v6, using `gunzip` and `tar`, made it work this time:
+Is the file corruption issue, of the previous section, due to the double clicking and the Apple expansion/inflation? Retrying v6, using `gunzip` and `tar`, made it work this time:
 
 ```none
 % gunzip dotnet-sdk-6.0.428-osx-x64.tar.gz
@@ -171,7 +183,7 @@ Is the issue due to the double clicking and the Apple expansion/inflation? Retry
 6.0.428
 ```
 
-Similarly for v7
+Similarly for v7:
 
 ```none
 % cd ../dotnet-sdk-7.0.410-osx-x64        
@@ -181,7 +193,7 @@ Similarly for v7
 7.0.410
 ```
 
-Similarly for v8
+Similarly for v8:
 
 ```none
 % gunzip dotnet-sdk-8.0.417-osx-x64.tar.gz                    
@@ -196,7 +208,7 @@ Similarly for v8
 % dotnet --version
 ```
 
-However, retrying for v9, as expected, is still broken
+However, retrying for v9, as expected, is *still* broken (for Catalina):
 
 ```none
 % ./dotnet --version
@@ -240,6 +252,8 @@ Failed to create CoreCLR, HRESULT: 0x80004005
 ```
 
 It would probably have installed the latest (v9?) version anyway, which would have been incompatible. It seems better to continue with the "working" v8.
+
+An alternative option might be to try `macports`, as it might have a Catalina compatible version of `dotnet`. However, as revealed below, I did not persue this option.
 
 ### Compiling Zilf!
 
@@ -771,7 +785,7 @@ the game will decribe any objects we put back on the corpse."
 
 Use [dotnet 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0), as it works on Catalina. I used version 8.0.417.
 
-Do **not** double click the `.tar.gz` file for `dotnet`, as it corrupts the contents. Use `gunzip` and `tar`.
+To expand the `dotnet` xompressed file, do **not** double click the `.tar.gz` file for `dotnet`, i.e. `dotnet-sdk-8.0.417-osx-x64.tar.gz`, as it corrupts the contents. Use `gunzip` and `tar` instead. However, you *can* just double click the `zilf-0.11.1.zip` file, to expand it.
 
 Remember to set the path to `dotnet` v8:
 
