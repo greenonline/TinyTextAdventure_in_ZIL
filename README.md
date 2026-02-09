@@ -159,7 +159,7 @@ Is this corruption normal? It seems unlikely. Is the `.tar.gz` being corrrupted 
 
 ### Using `gunzip` and `tar`
 
-[v5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) was the last version without an `Arm64` download. Extracted using `gunzip`/`tar` (and *not* by double clicking):
+It would appear that [v5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) was the last version without an `Arm64` download. When extracted using `gunzip`/`tar` (and *not* by double clicking), the `dotnet` binary runs *sans problème*, on Catalina:
 
 ```none
 % ./dotnet --version
@@ -233,7 +233,7 @@ Using [v3](https://dotnet.microsoft.com/en-us/download/dotnet/3.0)
 3.0.103
 ```
 
-### `brew`
+### Installing `dotnet` using `brew`
 
 Attempting to install `dotnet` using `brew`:
 
@@ -944,9 +944,9 @@ I gave up at this point. At least `zilf` is working and building `.zil` files.
 
 The easiest solution seemed to be to just fix the source code, to make it compatible with `dotnet` v8, instead of v9.
 
-I have placed this modified source code in [xtras/src](/xtras/src/).
+I have placed this modified source code in [xtras/src](/xtras/src/) as both a `.zip` and as a `.tar.gz`.
 
-You can unzip it and build it, using `dotnet` v8, with the following command:
+You can compress it and build it, using `dotnet` v8, with the following command:
 
 
 ```none
@@ -961,23 +961,56 @@ You will still need to set the three environment variables first, though (as wel
 % export PATH=$PATH:~/Downloads/ZILF/zilf/zilf-0.11.1/bin/debug/net8.0
 ```
 
+#### Reference
+
+ - [How do I tar a directory of files and folders without including the directory itself?](https://stackoverflow.com/q/939982/4424636)
+
+Creating, compressing and extracting the zilf tar file:
+
+```none
+# Creation
+% tar cvvf zilf-0.11.1.catalina_dotnet8.1.tar -C zilf-0.11.1.catalina_dotnet8.1 .
+% gzip -9 zilf-0.11.1.catalina_dotnet8.1.tar
+# Extraction
+% mkdir zilf-0111
+% tar -C zilf-0111 -xf zilf-0.11.1.catalina_dotnet8.1.tar.gz
+```
+
 ### Makefile
 
-This makefile installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/local/bin`. It can also install `dotnet` in your home directory, `~/`:
+This makefile does the following:
+
+ - installs, or removes, `dotnet` in your home directory, `~/`
+ - installs, or removes, the ZILF source code for Catalina
+ - builds the ZILF/ZAPF binaries
+ - installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/local/bin`
 
 
 ```none
 PROGRAM               = zilf
 
+#INSTALL_DIR           = ~/
+INSTALL_DIR           = ~/ZILF/
+#INSTALL_DIR           = ~/Downloads/
+#INSTALL_DIR           = ~/Downloads/ZILF/
+
 DOTNET                = dotnet
 
-DOTNET_DIR            = ~/$(DOTNET)
+DOTNET_DIR            = $(INSTALL_DIR)$(DOTNET)
+
+ZIL                   = zil
+
+ZIL_DIR               = $(INSTALL_DIR)$(ZIL)
 
 SRCS                  = Zilf.sln
 
 RM                    = rm
 
+CURL                  = curl
+
 TAR                   = tar
+
+UNZIP                 = unzip
 
 MAKE                  = make
 
@@ -994,8 +1027,8 @@ DEST_ZILLIB           = $(DEST)/zillib
 all:            
 		$(MAKE) install
 
-$(PROGRAM):	$(SRCS)
-		$(DOTNET) build $(SRCS)
+$(PROGRAM):	$(ZIL_DIR)/$(SRCS)
+		$(DOTNET) build $(ZIL_DIR)/$(SRCS)
 
 install:         
 		$(MAKE) install_zilf
@@ -1009,8 +1042,25 @@ clean:
 		$(MAKE) clean_common
 		$(MAKE) clean_zillib
 
+install_zil_zip:
+		$(CURL) -JLo $(ZIL).zip https://github.com/greenonline/TinyTextAdventure_in_ZIL/raw/refs/heads/main/xtras/src/zilf-0.11.1.catalina_dotnet8.1.zip
+		mkdir -p $(ZIL_DIR)
+		$(UNZIP) -d $(ZIL_DIR) $(ZIL).zip
+		$(RM) $(ZIL).zip
+		export PATH=$$PATH:$(ZIL_DIR)
+
+install_zil:
+		$(CURL) -JLo $(ZIL).tar.gz https://github.com/greenonline/TinyTextAdventure_in_ZIL/raw/refs/heads/main/xtras/src/zilf-0.11.1.catalina_dotnet8.1.tar.gz
+		mkdir -p $(ZIL_DIR)
+		$(TAR) -C $(ZIL_DIR) -xf $(ZIL).tar.gz
+		$(RM) $(ZIL).tar.gz
+		export PATH=$$PATH:$(ZIL_DIR)
+
+clean_zil:
+		$(RM) -rf $(ZIL_DIR)
+
 install_dotnet:
-		curl -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.417/dotnet-sdk-8.0.417-osx-x64.tar.gz
+		$(CURL) -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.417/dotnet-sdk-8.0.417-osx-x64.tar.gz
 		mkdir -p $(DOTNET_DIR)
 		$(TAR) -C $(DOTNET_DIR) -xf $(DOTNET).tar.gz
 		$(RM) $(DOTNET).tar.gz
@@ -1078,10 +1128,39 @@ clean_zillib:
 		rm $(DEST_ZILLIB)/libmsg-defaults.zil
 		rm $(DEST_ZILLIB)/qq.mud
 		rmdir $(DEST_ZILLIB)
-
 ```
 
-To install, enter one of the folloewing lines:
+To install `dotnet` v8
+
+```none
+make install_dotnet
+```
+
+To remove `dotnet` v8
+
+```none
+make clean_dotnet
+```
+
+To install `zilf` v0.11.1 source code for Catalina
+
+```none
+make install_zil
+```
+
+To remove `zilf` v0.11.1 source code for Catalina
+
+```none
+make clean_zil
+```
+
+To build `zilf` binaries
+
+```none
+make zilf
+```
+
+To install the built files to `/usr/local/bin/`, enter one of the folloewing lines:
 
 ```none
 make
