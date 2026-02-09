@@ -979,7 +979,7 @@ However, to finish off a build, by using `zapf`, you will need to copy some file
 
 ### Makefile
 
-This installs, or removes, the ZILF and ZAPF files to `/usr/local/bin`:
+This installs, or removes, *all* of the required ZILF and ZAPF files to `/usr/local/bin`:
 
 
 ```none
@@ -989,7 +989,13 @@ MAKE          = make
 
 DEST          = /usr/local/bin
 
-ORIG          = /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0
+ORIG          = /Users/macbook/Downloads/ZILF/zilf-0.11.1
+
+DOTNET        = $(ORIG)/bin/Debug/net8.0
+
+ORIG_ZILLIB   = $(ORIG)/zillib
+
+DEST_ZILLIB   = $(DEST)/zillib
 
 MAKE          = make
 
@@ -1000,27 +1006,42 @@ install:
 		$(MAKE) install_zilf
 		$(MAKE) install_zapf
 		$(MAKE) install_common
+		$(MAKE) install_zillib
 
 clean:         
 		$(MAKE) clean_zilf
 		$(MAKE) clean_zapf
 		$(MAKE) clean_common
+		$(MAKE) clean_zillib
 
 install_zilf:
-		cp $(ORIG)/zilf $(DEST)
-		cp $(ORIG)/zilf.dll $(DEST)
-		cp $(ORIG)/zilf.runtimeconfig.json $(DEST)
-		cp $(ORIG)/Zilf.Emit.dll $(DEST)
-		cp $(ORIG)/ReadLine.dll $(DEST)
+		cp $(DOTNET)/zilf $(DEST)
+		cp $(DOTNET)/zilf.dll $(DEST)
+		cp $(DOTNET)/zilf.runtimeconfig.json $(DEST)
+		cp $(DOTNET)/Zilf.Emit.dll $(DEST)
+		cp $(DOTNET)/ReadLine.dll $(DEST)
 
 install_zapf:
-		cp $(ORIG)/zapf $(DEST)
-		cp $(ORIG)/zapf.dll $(DEST)
-		cp $(ORIG)/zapf.runtimeconfig.json $(DEST)
-		cp $(ORIG)/Zapf.Parsing.dll $(DEST)
+		cp $(DOTNET)/zapf $(DEST)
+		cp $(DOTNET)/zapf.dll $(DEST)
+		cp $(DOTNET)/zapf.runtimeconfig.json $(DEST)
+		cp $(DOTNET)/Zapf.Parsing.dll $(DEST)
 
 install_common:
-		cp $(ORIG)/Zilf.Common.dll $(DEST)
+		cp $(DOTNET)/Zilf.Common.dll $(DEST)
+
+install_zillib:
+		mkdir -p $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/parser.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/verbs.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/scope.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/events.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/orphan.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/pseudo.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/pronouns.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/libmsg.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/libmsg-defaults.zil $(DEST_ZILLIB)
+		cp $(ORIG_ZILLIB)/qq.mud $(DEST_ZILLIB)
 
 clean_zilf:
 		rm $(DEST)/zilf
@@ -1037,6 +1058,19 @@ clean_zapf:
 
 clean_common:
 		rm $(DEST)/Zilf.Common.dll
+
+clean_zillib:
+		rm $(DEST_ZILLIB)/parser.zil
+		rm $(DEST_ZILLIB)/verbs.zil
+		rm $(DEST_ZILLIB)/scope.zil
+		rm $(DEST_ZILLIB)/events.zil
+		rm $(DEST_ZILLIB)/orphan.zil
+		rm $(DEST_ZILLIB)/pseudo.zil
+		rm $(DEST_ZILLIB)/pronouns.zil
+		rm $(DEST_ZILLIB)/libmsg.zil
+		rm $(DEST_ZILLIB)/libmsg-defaults.zil
+		rm $(DEST_ZILLIB)/qq.mud
+		rmdir $(DEST_ZILLIB)
 ```
 
 To install, enter one of the folloewing lines:
