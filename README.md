@@ -29,7 +29,7 @@ How does one go about setting up on the Mac? What binaries are required?
 
 #### ZILF source code
 
-This page, [https://github.com/taradinoc/zilf](https://github.com/taradinoc/zilf) was useful for getting started.
+The readme of [zilf](https://github.com/taradinoc/zilf) was useful for getting started.
 
  - [Releases](https://foss.heptapod.net/zilf/zilf/-/releases) – [ZILF 0.11.1](https://foss.heptapod.net/zilf/zilf/-/releases/0.11.1)
    - Get the macOS version tarball of `zilf`
@@ -482,24 +482,7 @@ Failed to run as a self-contained app.
   - If this should be a framework-dependent app, add the '/usr/local/bin/zilf.runtimeconfig.json' file and specify the appropriate framework.
 ```
 
-Hmmm, this could end up moving a lot of files around. Running from the `zilf-0.11.1/` directory yields much better results, and a REPL:
-
-```none
-% bin/debug/net8.0/zilf
-ZILF 0.11.1 built 08/02/2026 19:37:13
-> quit
-QUIT
-> exit
-exit
-> 
-```
-
-and finally compiling the TinyTextAdventure ZIL code:
-
-```none
-% ~/Downloads/zilf-0.11.1/bin/debug/net8.0/zilf  tenline.zil 
-ZILF 0.11.1 built 08/02/2026 19:37:13
-```
+Hmmm, this could end up moving a lot of files around...
 
 #### Moving everything?
 
@@ -598,6 +581,114 @@ ZILF 0.11.1 built 08/02/2026 19:37:13
 
 For this reason, I stopped trying to move the files to `/usr/local/bin/`, and just used the `zilf` binary in place within the `bin/debug/net8.0/` directory, as is. 
 
+### Running `zilf` from its build directory
+
+Running `zilf` from the `zilf-0.11.1/` directory yields much better results, and a REPL:
+
+```none
+% bin/debug/net8.0/zilf
+ZILF 0.11.1 built 08/02/2026 19:37:13
+> quit
+QUIT
+> exit
+exit
+> 
+```
+
+and finally compiling the TinyTextAdventure ZIL code:
+
+```none
+% ~/Downloads/zilf-0.11.1/bin/debug/net8.0/zilf  tenline.zil 
+ZILF 0.11.1 built 08/02/2026 19:37:13
+```
+
+This results in 
+
+```none
+% ls ten*
+tenline.zap		tenline_data.zap	tenline_str.zap
+tenline.zil		tenline_freq.zap
+```
+
+However, the [readme](https://github.com/taradinoc/zilf?tab=readme-ov-file) states that there should be a `.z3` file, which I do not have.
+
+What that *readme* is missing, is the following step which is shown in [ZIL - Where to start - Quick Code Guide](https://www.youtube.com/watch?v=VMflK-xjyg0) @ [8:15](https://www.youtube.com/watch?v=VMflK-xjyg0&t=495),
+
+```none
+% zapf tenline.zap
+The application to execute does not exist: '/usr/local/bin/zapf.dll'.
+```
+
+There seems to be a hardcoded path to `usr/local/bin` as `zapf.dll` is in the `PATH`:
+
+```none
+ % echo $PATH
+/usr/local/opt/llvm/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/macbook/.cargo/bin:/Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0:/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64
+% ls /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.*
+zapf.dll                 zapf.runtimeconfig.json
+zapf.deps.json           zapf.pdb      
+```
+
+That is rather unfortunate. Manually copying `zapf.dll` to `/usr/local/bin/`,
+
+```none
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+macbook@Macbooks-MacBook-Pro ZIL % zapf tenline.zap
+A fatal error was encountered. The library 'libhostpolicy.dylib' required to execute the application was not found in '/Users/macbook/Downloads/ZILF/dotnet-sdk-8.0.417-osx-x64'.
+Failed to run as a self-contained app.
+  - The application was run as a self-contained app because '/usr/local/bin/zapf.runtimeconfig.json' was not found.
+  - If this should be a framework-dependent app, add the '/usr/local/bin/zapf.runtimeconfig.json' file and specify the appropriate framework.
+```
+
+This really does seem rather unfortunate, especially as I had previously given up on trying to move everything to `/usr/local/bin`.
+
+Nowevertheless, soldiering on, regardless,
+
+```none
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% zapf tenline.zap
+Unhandled exception. System.IO.FileNotFoundException: Could not load file or assembly 'Zapf.Parsing, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'. The system cannot find the file specified.
+
+File name: 'Zapf.Parsing, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'
+zsh: abort      zapf tenline.zap
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% zapf tenline.zap
+Unhandled exception. System.IO.FileNotFoundException: Could not load file or assembly 'Zilf.Common, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'. The system cannot find the file specified.
+
+File name: 'Zilf.Common, Version=0.11.1.0, Culture=neutral, PublicKeyToken=null'
+   at Zapf.Context..ctor()
+   at Zapf.Program.TryParseArgs(IReadOnlyList`1 args, Context& ctx)
+   at Zapf.Program.Main(String[] args)
+zsh: abort      zapf tenline.zap
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin 
+% zapf tenline.zap
+ZAPF 0.11.1
+Reading tenline.zap
+Reading tenline_freq.zap
+Reading tenline_data.zap
+Reading tenline_str.zap
+Measuring..
+Assembling
+Wrote 23074 bytes to tenline.z3
+% ls ten*
+tenline.z3		tenline.zil		tenline_freq.zap
+tenline.zap		tenline_data.zap	tenline_str.zap
+```
+
+***Success!!!*** You can see the `.z3` file.
+
+#### Summary
+
+You need to move these files for `zapf` to work:
+
+```none
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zapf.runtimeconfig.json /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zapf.Parsing.dll /usr/local/bin
+% cp /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
+```
+
+
 ### Using the online toolchain
 
 I tried installing an Ubuntu 24.04.3 LTS VM on VirtualBox, but my Mac slowed to a crawl.
@@ -608,7 +699,7 @@ Before I managed to get `dotnet` v8 working (see above), I ended up just using t
 
 (If you have read everything this far, very well done!)
 
-This is the ZIL port of the **TinyTextAdventure**:
+This is the ZIL port of the **TinyTextAdventure**, `tenline.zil`:
 
 
 ```none
