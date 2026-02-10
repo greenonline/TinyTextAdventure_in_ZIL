@@ -13,6 +13,8 @@ One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com
 
  - [Tiny Text Adventure: From ZX81 to VIC-20 to Ultimate 64](https://www.youtube.com/watch?v=_d2g5BXdyfU)
  - [ZIL Info Repo:ZIL_Resources](https://github.com/heasm66/ZIL-Resources/tree/master)
+ - [Sample games](https://foss.heptapod.net/zilf/zilf/-/tree/branch/default/sample)
+ - [ZILF change log](https://github.com/taradinoc/zilf/blob/branch/default/CHANGELOG.md)
 
 
 ### Vaguely related
@@ -996,11 +998,14 @@ INSTALL_DIR           = ~/ZILF/
 
 DOTNET                = dotnet
 
-DOTNET_DIR            = $(INSTALL_DIR)$(DOTNET)
+DOTNET_DIR            = $(INSTALL_DIR)$(DOTNET)/
 
 ZIL                   = zil
 
-ZIL_DIR               = $(INSTALL_DIR)$(ZIL)
+#ZIL_VERSION           = 0.11.1
+ZIL_VERSION           = 1.4
+
+ZIL_DIR               = $(INSTALL_DIR)$(ZIL)/
 
 SRCS                  = Zilf.sln
 
@@ -1014,21 +1019,28 @@ UNZIP                 = unzip
 
 MAKE                  = make
 
-DEST                  = /usr/local/bin
+DEST                  = /usr/local/bin/
 
-ZILF_SRC_DIR          = /Users/macbook/Downloads/ZILF/zilf-0.11.1
+#ZILF_SRC_DIR          = /Users/macbook/Downloads/ZILF/zilf-0.11.1
+ZILF_SRC_DIR          = $(ZIL_DIR)
 
-DOTNET_BUILD          = $(ZILF_SRC_DIR)/bin/Debug/net8.0
+DOTNET_BUILD          = $(ZILF_SRC_DIR)/bin/Debug/net8.0/
 
-ZILF_SRC_DIR_ZILLIB   = $(ZILF_SRC_DIR)/zillib
+ZILF_SRC_DIR_ZILLIB   = $(ZILF_SRC_DIR)/zillib/
 
 DEST_ZILLIB           = $(DEST)/zillib
 
 all:            
 		$(MAKE) install
 
-$(PROGRAM):	$(ZIL_DIR)/$(SRCS)
-		$(DOTNET) build $(ZIL_DIR)/$(SRCS)
+everything:            
+		$(MAKE) install_dotnet
+		$(MAKE) install_zil
+		$(MAKE) $(PROGRAM)
+
+$(PROGRAM):	$(ZIL_DIR)$(SRCS)
+		$(DOTNET) build $(ZIL_DIR)$(SRCS)
+		$(DOTNET_BUILD)$(PROGRAM) --version
 
 install:         
 		$(MAKE) install_zilf
@@ -1042,19 +1054,24 @@ clean:
 		$(MAKE) clean_common
 		$(MAKE) clean_zillib
 
+path_msg:         
+		@echo 'Remeber to set .NET paths'
+		export DOTNET_ROOT=$(DOTNET_DIR)
+		export PATH=$$PATH:$(DOTNET_DIR)
+		export PATH=$$PATH:$(ZIL_DIR)bin/Debug/net8.0
+
 install_zil_zip:
 		$(CURL) -JLo $(ZIL).zip https://github.com/greenonline/TinyTextAdventure_in_ZIL/raw/refs/heads/main/xtras/src/zilf-0.11.1.catalina_dotnet8.1.zip
 		mkdir -p $(ZIL_DIR)
 		$(UNZIP) -d $(ZIL_DIR) $(ZIL).zip
 		$(RM) $(ZIL).zip
-		export PATH=$$PATH:$(ZIL_DIR)
 
 install_zil:
-		$(CURL) -JLo $(ZIL).tar.gz https://github.com/greenonline/TinyTextAdventure_in_ZIL/raw/refs/heads/main/xtras/src/zilf-0.11.1.catalina_dotnet8.1.tar.gz
+		#$(CURL) -JLo $(ZIL).tar.gz https://github.com/greenonline/TinyTextAdventure_in_ZIL/raw/refs/heads/main/xtras/src/zilf-0.11.1.catalina_dotnet8.1.tar.gz
+		$(CURL) -JLo $(ZIL).tar.gz https://github.com/greenonline/TinyTextAdventure_in_ZIL/raw/refs/heads/main/xtras/src/zilf-$(ZIL_VERSION).catalina_dotnet8.1.tar.gz
 		mkdir -p $(ZIL_DIR)
 		$(TAR) -C $(ZIL_DIR) -xf $(ZIL).tar.gz
 		$(RM) $(ZIL).tar.gz
-		export PATH=$$PATH:$(ZIL_DIR)
 
 clean_zil:
 		$(RM) -rf $(ZIL_DIR)
@@ -1072,11 +1089,14 @@ clean_dotnet:
 		$(RM) -rf $(DOTNET_DIR)
 
 install_zilf:
-		cp $(DOTNET_BUILD)/zilf $(DEST)
-		cp $(DOTNET_BUILD)/zilf.dll $(DEST)
-		cp $(DOTNET_BUILD)/zilf.runtimeconfig.json $(DEST)
-		cp $(DOTNET_BUILD)/Zilf.Emit.dll $(DEST)
-		cp $(DOTNET_BUILD)/ReadLine.dll $(DEST)
+		cp $(DOTNET_BUILD)zilf $(DEST)
+		cp $(DOTNET_BUILD)zilf.dll $(DEST)
+		cp $(DOTNET_BUILD)zilf.runtimeconfig.json $(DEST)
+		cp $(DOTNET_BUILD)Zilf.Emit.dll $(DEST)
+		cp $(DOTNET_BUILD)ReadLine.dll $(DEST)
+
+install_zilf14:
+		cp $(DOTNET_BUILD)System.CommandLine.dll $(DEST)
 
 install_zapf:
 		cp $(DOTNET_BUILD)/zapf $(DEST)
@@ -1100,12 +1120,22 @@ install_zillib:
 		cp $(ZILF_SRC_DIR_ZILLIB)/libmsg-defaults.zil $(DEST_ZILLIB)
 		cp $(ZILF_SRC_DIR_ZILLIB)/qq.mud $(DEST_ZILLIB)
 
+install_zillib14:
+		mkdir -p $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/hooks.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/scoring.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/status.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/template.zil $(DEST_ZILLIB)
+
 clean_zilf:
 		rm $(DEST)/zilf
 		rm $(DEST)/zilf.dll
 		rm $(DEST)/zilf.runtimeconfig.json
 		rm $(DEST)/Zilf.Emit.dll
 		rm $(DEST)/ReadLine.dll
+
+clean_zilf14:
+		rm $(DEST)System.CommandLine.dll
 
 clean_zapf:
 		rm $(DEST)/zapf
@@ -1128,6 +1158,12 @@ clean_zillib:
 		rm $(DEST_ZILLIB)/libmsg-defaults.zil
 		rm $(DEST_ZILLIB)/qq.mud
 		rmdir $(DEST_ZILLIB)
+
+clean_zillib14:
+		rm $(DEST_ZILLIB)/hooks.zil
+		rm $(DEST_ZILLIB)/scoring.zil
+		rm $(DEST_ZILLIB)/status.zil
+		rm $(DEST_ZILLIB)/template.zil
 ```
 
 To install `dotnet` v8
@@ -1244,7 +1280,7 @@ Making Zilf 1.4 "compatible" with `dotnet` v8...
 
 15 errors:
 
-net10.0 -> net8.0
+Change target from `net10.0` to `net8.0` in the following files:
 
  - `Zilf.Common.csproj`
  - `Zilf.Tests.Integration.csproj`
@@ -1265,17 +1301,17 @@ net10.0 -> net8.0
 
 4 errors:
 
-WebAssembly, WebAssembly.DevServer and WebUtilities
+The entries for `WebAssembly`, `WebAssembly.DevServer` and `WebUtilities` refer to `10.0`. Change to `8.0` in the following files:
  
  - `Zilf.Playground.csproj`
 
 4 errors:
 
-LangVersion 13 -> 12 
+`LangVersion` needs to change from `13` to `12`, in the following files: 
 
  - `Directory.Build.props`
 
-Builds with zero errors, but one warning:
+Builds with zero errors, but one (supressed) warning:
 
 
 ```none
@@ -1284,6 +1320,189 @@ Builds with zero errors, but one warning:
 ```
 
 Fortunately, `dragon.zil` still builds, and now `cloak.zil` and `advent.zil` do too, without the errors seen with `zilf` 0.11.1
+
+### Moving v1.4 to `/usr/local/bin/`
+
+#### `zilf`
+
+`zilf` v1.4 requires an additonal file, `System.CommandLine.dll`, to be copied over to `/usr/local/bin/`
+
+```none
+cp ~/ZILF/zil//bin/Debug/net8.0/System.CommandLine.dll /usr/local/bin/
+```
+
+Makefile
+
+```none
+install_zilf14:
+		cp $(DOTNET_BUILD)System.CommandLine.dll $(DEST)
+
+clean_zilf14:
+		rm $(DEST)System.CommandLine.dll
+```
+
+#### `zillib`
+
+Additional files in `zillib` for v1.4:
+`hooks.zil`, `scoring.zil`, `status.zil`
+
+`template.zil`
+
+```none
+cp 
+```
+
+Makefile
+
+```none
+install_zillib14:
+		mkdir -p $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/hooks.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/scoring.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/status.zil $(DEST_ZILLIB)
+		cp $(ZILF_SRC_DIR_ZILLIB)/template.zil $(DEST_ZILLIB)
+
+clean_zillib14:
+		rm $(DEST_ZILLIB)/hooks.zil
+		rm $(DEST_ZILLIB)/scoring.zil
+		rm $(DEST_ZILLIB)/status.zil
+		rm $(DEST_ZILLIB)/template.zil
+```
+
+
+## Issues with Zork1
+
+However, building [`zork1.zil`](https://foss.heptapod.net/zilf/zilf/-/tree/branch/default/sample/zork1) fails against `zilf` v1.4:
+
+```none
+% /Users/macbook/Downloads/ZILF/zilf-1.4/bin/Debug/net8.0/zilf zork1.zil 
+ZILF 1.4 built 10/02/2026 05:16:48
+Renovated ZORK I: The Great Underground Empire
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1011: ZSCII 9 (tab) cannot safely be printed in Z-machine version 3
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1073: ZSCII 9 (tab) cannot safely be printed in Z-machine version 3
+28 warnings (26 suppressed)
+ZAPF 1.4
+Reading zork1.zap
+Reading zork1_freq.zap
+Reading zork1_data.zap
+Reading zork1_str.zap
+Measuring..
+error: required global symbol 'WORDS' is missing
+
+Failed (1 error)
+```
+
+Although it seems to build for 0.11.1
+
+```none
+% zilf zork1.zil                                                        
+ZILF 0.11.1 built 08/02/2026 19:37:13
+Renovated ZORK I: The Great Underground Empire
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1011: ZSCII 9 (tab) cannot be safely printed in Z-machine version 3
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1073: ZSCII 9 (tab) cannot be safely printed in Z-machine version 3
+28 warnings (26 suppressed)
+```
+
+Although it *had* failed previously against 0.11.1. A combination of 0.11.1, then 1.4 and then 0.11.1 again, *seems* to make it build(???):
+
+```none
+% zilf zork1.zil 
+ZILF 0.11.1 built 08/02/2026 19:37:13
+Renovated ZORK I: The Great Underground Empire
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1011: ZSCII 9 (tab) cannot be safely printed in Z-machine version 3
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1073: ZSCII 9 (tab) cannot be safely printed in Z-machine version 3
+file not found: FastHashSet, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
+% /Users/macbook/Downloads/ZILF/zilf-1.4/bin/Debug/net8.0/zilf zork1.zil 
+ZILF 1.4 built 10/02/2026 05:16:48
+Renovated ZORK I: The Great Underground Empire
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1011: ZSCII 9 (tab) cannot safely be printed in Z-machine version 3
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1073: ZSCII 9 (tab) cannot safely be printed in Z-machine version 3
+28 warnings (26 suppressed)
+ZAPF 1.4
+Reading zork1.zap
+Reading zork1_freq.zap
+Reading zork1_data.zap
+Reading zork1_str.zap
+Measuring..
+error: required global symbol 'WORDS' is missing
+
+Failed (1 error)
+% zilf zork1.zil                                                        
+ZILF 0.11.1 built 08/02/2026 19:37:13
+Renovated ZORK I: The Great Underground Empire
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1011: ZSCII 9 (tab) cannot be safely printed in Z-machine version 3
+[warning ZIL0410] /Users/macbook/Documents/TandT/ZIL/zilf-branch-default-sample-zork1/sample/zork1/1DUNGEON.zil:1073: ZSCII 9 (tab) cannot be safely printed in Z-machine version 3
+28 warnings (26 suppressed)
+% 
+```
+
+The `required global symbol 'WORDS' is missing` issue is mentioned here, [ZILCH-How-to](https://github.com/ZoBoRf/ZILCH-How-to):
+
+> ```none
+> error: required global symbol 'WORDS' is missing
+> 
+> Failed (1 error)
+> ```
+> 
+> OK, create an empty frequent words file:
+> 
+> ```none
+> C:\storage\project\if\zilch.github\out># type zork2word.xzap
+> 
+> 
+> ;word frequency table of 96 most common words
+> 
+> WORDS:: .TABLE
+>         .ENDT
+> 
+>         .ENDI
+> ```
+> 
+> Add a new first line to `ZORK2.ZAP`:
+> 
+> ```none
+>         .INSERT "ZORK2WORD"
+> ```
+
+The file `zillib/tests/testing.zil` contains the line
+
+```none
+    <SET WORDS
+```
+
+However, copying over the contents of `zillib/tests/` to `/usr/local/bin/zillib/` did not resolve the `'WORDS'` issue.
+
+However, following the quoted instructions above by creating a `words4zork1.zap` file and putting in it
+
+```none
+;word frequency table of 96 most common words
+
+WORDS:: .TABLE
+        .ENDT
+
+        .ENDI
+```
+
+and adding the following line to the start of `zork1.zap`
+
+```none
+        .INSERT "words4zork1"
+```
+
+actually works and `zork1.z3` was created:
+
+```none
+% zapf zork1.zap 
+ZAPF 1.4
+Reading zork1.zap
+Reading words4zork1.zap
+Reading zork1_freq.zap
+Reading zork1_data.zap
+Reading zork1_str.zap
+Measuring..
+Assembling
+Wrote 96972 bytes to zork1.z3
+```
 
 ## Gotchas and conclusion
 
