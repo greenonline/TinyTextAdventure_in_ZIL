@@ -1177,7 +1177,64 @@ make clean
 #### References
 
  - [How to set child process' environment variable in Makefile](https://stackoverflow.com/q/23843106/4424636)
+ - [Download single files from GitHub](https://stackoverflow.com/q/4604663/4424636)
 
+## Additional issues?
+
+Upon attempting to compile *Collosal Caves*, AKA [advent](https://foss.heptapod.net/zilf/zilf/-/tree/branch/default/sample/advent), i.e. `advent.zil`, I found some new issues, when using a `/usr/local/bin` install, rather than the build directory:
+
+```none
+% zilf advent.zil
+ZILF 0.11.1 built 08/02/2026 19:37:13
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/advent.zil:217: calling unassigned atom: SCORING-ACHIEVEMENTS
+
+[error MDL0112] /Users/macbook/Documents/TandT/ZIL/advent.zil:4066: too many prepositions in syntax definition
+    [info MDL0101] did you mean to separate them with OBJECT?
+
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/hints.zil:3: USE: file not found: HOOKS
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/advent.zil:4787
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/hints.zil:74: calling unassigned atom: ADD-FINISHER
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/advent.zil:4787
+4 errors
+```
+
+Possibly due to missing `zillib/` files?
+
+Maybe not, as I also got the same errors if using the build directory
+
+```none
+% /Users/macbook/Downloads/ZILF/zilf-0.11.1/bin/Debug/net8.0/zilf advent.zil
+ZILF 0.11.1 built 08/02/2026 19:37:13
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/advent.zil:217: calling unassigned atom: SCORING-ACHIEVEMENTS
+
+[error MDL0112] /Users/macbook/Documents/TandT/ZIL/advent.zil:4066: too many prepositions in syntax definition
+    [info MDL0101] did you mean to separate them with OBJECT?
+
+[error MDL0604] /Users/macbook/Documents/TandT/ZIL/hints.zil:3: USE: file not found: HOOKS
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/advent.zil:4787
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/hints.zil:74: calling unassigned atom: ADD-FINISHER
+  in INSERT-FILE called at /Users/macbook/Documents/TandT/ZIL/advent.zil:4787
+4 errors
+```
+
+Likewise, [cloak.zil](https://foss.heptapod.net/zilf/zilf/-/blob/branch/default/sample/cloak/cloak.zil) gave me an error:
+
+```none
+[error MDL0200] /Users/macbook/Documents/TandT/ZIL/cloak.zil:64: calling unassigned atom: SCORING-ACHIEVEMENTS
+```
+
+However, [dragon.zil](https://foss.heptapod.net/zilf/zilf/-/blob/branch/default/sample/dragon/dragon.zil) built with no errors, and resulted in a `.z4` file.
+
+From the [Change log](https://github.com/taradinoc/zilf/blob/branch/default/CHANGELOG.md) there are five releases *after* 0.11.1, so I just have an out-of-date build of the `zilf` source code:
+
+ - Scoring was added in [v1.4](https://github.com/taradinoc/zilf/releases/tag/1.4)
+ - `QQ` was in v0.10
+
+## Running
+
+For Catalina, [Gargoyle](https://github.com/garglk/garglk/releases), [v2023.1](https://github.com/garglk/garglk/releases/tag/2023.1), use `gargoyle-2023.1-mac-x64-mojave.dmg`. However, it made the fans of my MBP race
+
+[![Dragon running in Gargoyle][2]][2]
 
 ## Gotchas and conclusion
 
@@ -1209,7 +1266,8 @@ However, to finish off a build, by using `zapf`, you will need to copy some file
 % cp /Users/macbook/Downloads/ZILF/zilf/zilf-0.11.1/bin/Debug/net8.0/Zilf.Common.dll /usr/local/bin
 ```
 
+Or just use the makefile to install both `zilf` and `zapf` correctly, into `/usr/local/bin/`.
 
 
-
-  [1]: xtras/images/MicroSoftCoreDamaged.png
+  [1]: xtras/images/MicroSoftCoreDamaged.png "Microsoft Core damaged dialog"
+  [2]: xtras/images/DragonRunningInGargoyle.png "Dragon running in Gargoyle"
