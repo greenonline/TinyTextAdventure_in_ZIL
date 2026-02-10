@@ -1230,11 +1230,60 @@ From the [Change log](https://github.com/taradinoc/zilf/blob/branch/default/CHAN
  - Scoring was added in [v1.4](https://github.com/taradinoc/zilf/releases/tag/1.4)
  - `QQ` was in v0.10
 
-## Running
+## Playing a game
 
-For Catalina, [Gargoyle](https://github.com/garglk/garglk/releases), [v2023.1](https://github.com/garglk/garglk/releases/tag/2023.1), use `gargoyle-2023.1-mac-x64-mojave.dmg`. However, it made the fans of my MBP race
+For Catalina, [Gargoyle](https://github.com/garglk/garglk/releases), [v2023.1](https://github.com/garglk/garglk/releases/tag/2023.1), use `gargoyle-2023.1-mac-x64-mojave.dmg`. However, it made the fans of my MBP race within seconds of launching.
 
 [![Dragon running in Gargoyle][2]][2]
+
+I found [Spatterlight](https://github.com/angstsmurf/spatterlight/releases) to be a *lot* more lightweight, w.r.t. the fan speed.
+
+## Fixing Zilf 1.4
+
+Making Zilf 1.4 "compatible" with `dotnet` v8...
+
+15 errors:
+
+net10.0 -> net8.0
+
+ - `Zilf.Common.csproj`
+ - `Zilf.Tests.Integration.csproj`
+ - `Dezapf.csproj`
+ - `Zilf.Emit.csproj`
+ - `Zilf.Emit.Tests.csproj`
+ - `Zapf.Parsing.csproj`
+ - `ZilfAnalyzers.csproj`
+ - `Zilf.Playground.csproj`
+ - `Zilf.Tests.csproj`
+ - `Dezapf.Tests.csproj`
+ - `Zilf.csproj`
+ - `Zapf.Tests.csproj`
+ - `WindowsInstaller.csproj`
+ - `Zilf.Common.Tests.csproj`
+ - `Zapf.csproj`
+ - `ZilfAnalyzers.Test.csproj`
+
+4 errors:
+
+WebAssembly, WebAssembly.DevServer and WebUtilities
+ 
+ - `Zilf.Playground.csproj`
+
+4 errors:
+
+LangVersion 13 -> 12 
+
+ - `Directory.Build.props`
+
+Builds with zero errors, but one warning:
+
+
+```none
+/Users/macbook/Downloads/ZILF/zilf-1.4/test/Zilf.Tests.Integration/FyreHelper.cs(351,28): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [/Users/macbook/Downloads/ZILF/zilf-1.4/test/Zilf.Tests.Integration/Zilf.Tests.Integration.csproj]
+    1 Warning(s)
+```
+
+Fortunately, `dragon.zil` still builds, and now `cloak.zil` and `advent.zil` do too, without the errors seen with `zilf` 0.11.1
 
 ## Gotchas and conclusion
 
@@ -1269,5 +1318,8 @@ However, to finish off a build, by using `zapf`, you will need to copy some file
 Or just use the makefile to install both `zilf` and `zapf` correctly, into `/usr/local/bin/`.
 
 
+
+
+ 
   [1]: xtras/images/MicroSoftCoreDamaged.png "Microsoft Core damaged dialog"
   [2]: xtras/images/DragonRunningInGargoyle.png "Dragon running in Gargoyle"
