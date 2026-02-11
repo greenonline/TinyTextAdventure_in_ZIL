@@ -7,7 +7,10 @@ This is the code for the ZIL port of TinyTextAdventure, `tenline.zil`, as writte
 
 As the ZIL code didn't seem to have been made available, I transcribed it and posted it here. Skip to the bottom of the page for the ZIL port code, if you want to avoid having to read about trying to get `zilf` working on a Mac running Catalina.
 
-One point of note: Why [was it decided](https://rec.arts.int-fiction.narkive.com/WoLS9RmC/zilf-a-zil-compiler) to write ZILF in C# and .NET? It was rather frustrating trying to get a version of ZILF to run on macOS Catalina (10.15.8).
+One point of note: 
+
+ - Why [was it decided](https://rec.arts.int-fiction.narkive.com/WoLS9RmC/zilf-a-zil-compiler) to write ZILF in C# and .NET? It was rather frustrating trying to get a version of ZILF to run on macOS Catalina (10.15.8).
+   - Answer: [ZIL Coding](https://intfiction.org/t/zil-coding/12907/21?page=2)
 
 ## Links
 
@@ -1502,6 +1505,12 @@ Reading zork1_str.zap
 Measuring..
 Assembling
 Wrote 96972 bytes to zork1.z3
+```
+
+It would be nice to add a `.zil` file containing a fix for the missing `'WORDS'`, rather than having to "hack" a compiled `.zap` file. After some random experimentation, I found that adding the following line in `zork1.zil` fixed the issue:
+
+```none
+<GLOBAL WORDS <>>
 ```
 
 ## Gotchas and conclusion
