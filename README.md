@@ -1037,9 +1037,11 @@ all:
 		$(MAKE) install
 
 everything:            
-		$(MAKE) install_dotnet
+		$(MAKE) install_dotnet8
 		$(MAKE) install_zil
 		$(MAKE) $(PROGRAM)
+		$(MAKE) install
+		$(MAKE) install_zilf14
 
 $(PROGRAM):	$(ZIL_DIR)$(SRCS)
 		$(DOTNET) build $(ZIL_DIR)$(SRCS)
@@ -1079,17 +1081,65 @@ install_zil:
 clean_zil:
 		$(RM) -rf $(ZIL_DIR)
 
-install_dotnet:
+install_dotnet8:
 		$(CURL) -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.417/dotnet-sdk-8.0.417-osx-x64.tar.gz
-		mkdir -p $(DOTNET_DIR)
-		$(TAR) -C $(DOTNET_DIR) -xf $(DOTNET).tar.gz
+		mkdir -p $(DOTNET_DIR)8
+		$(TAR) -C $(DOTNET_DIR)8 -xf $(DOTNET).tar.gz
 		$(RM) $(DOTNET).tar.gz
-		export DOTNET_ROOT=$(DOTNET_DIR)
-		export PATH=$$PATH:$(DOTNET_DIR)
+		export DOTNET_ROOT=$(DOTNET_DIR)8
+		export PATH=$$PATH:$(DOTNET_DIR)8
+		$(DOTNET) --version
+
+install_dotnet7:
+		$(CURL) -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/7.0.410/dotnet-sdk-7.0.410-osx-x64.tar.gz
+		mkdir -p $(DOTNET_DIR)7
+		$(TAR) -C $(DOTNET_DIR)7 -xf $(DOTNET).tar.gz
+		$(RM) $(DOTNET).tar.gz
+		export DOTNET_ROOT=$(DOTNET_DIR)7
+		export PATH=$$PATH:$(DOTNET_DIR)7
+		$(DOTNET) --version
+
+install_dotnet6:
+		$(CURL) -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/6.0.428/dotnet-sdk-6.0.428-osx-x64.tar.gz
+		mkdir -p $(DOTNET_DIR)6
+		$(TAR) -C $(DOTNET_DIR)6 -xf $(DOTNET).tar.gz
+		$(RM) $(DOTNET).tar.gz
+		export DOTNET_ROOT=$(DOTNET_DIR)6
+		export PATH=$$PATH:$(DOTNET_DIR)6
+		$(DOTNET) --version
+
+install_dotnet5:
+		$(CURL) -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/5.0.408/dotnet-sdk-5.0.408-osx-x64.tar.gz
+		mkdir -p $(DOTNET_DIR)5
+		$(TAR) -C $(DOTNET_DIR)5 -xf $(DOTNET).tar.gz
+		$(RM) $(DOTNET).tar.gz
+		export DOTNET_ROOT=$(DOTNET_DIR)5
+		export PATH=$$PATH:$(DOTNET_DIR)5
+		$(DOTNET) --version
+
+install_dotnet3:
+		$(CURL) -Lo $(DOTNET).tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/3.0.103/dotnet-sdk-3.0.103-osx-x64.tar.gz
+		mkdir -p $(DOTNET_DIR)3
+		$(TAR) -C $(DOTNET_DIR)3 -xf $(DOTNET).tar.gz
+		$(RM) $(DOTNET).tar.gz
+		export DOTNET_ROOT=$(DOTNET_DIR)3
+		export PATH=$$PATH:$(DOTNET_DIR)3
 		$(DOTNET) --version
 
 clean_dotnet:
 		$(RM) -rf $(DOTNET_DIR)
+
+clean_dotnet7:
+		$(RM) -rf $(DOTNET_DIR)7
+
+clean_dotnet6:
+		$(RM) -rf $(DOTNET_DIR)6
+
+clean_dotnet5:
+		$(RM) -rf $(DOTNET_DIR)5
+
+clean_dotnet3:
+		$(RM) -rf $(DOTNET_DIR)3
 
 install_zilf:
 		cp $(DOTNET_BUILD)zilf $(DEST)
