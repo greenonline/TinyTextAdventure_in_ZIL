@@ -1199,7 +1199,7 @@ To build `zilf` binaries
 make zilf
 ```
 
-To install the built files to `/usr/local/bin/`, enter one of the folloewing lines:
+To install the built files to `/usr/local/bin/`, enter one of the following lines:
 
 ```none
 make
@@ -1269,13 +1269,15 @@ From the [Change log](https://github.com/taradinoc/zilf/blob/branch/default/CHAN
  - Scoring was added in [v1.4](https://github.com/taradinoc/zilf/releases/tag/1.4)
  - `QQ` was in v0.10
 
+As will be seen below, installing `zilf` v1.4 allows the other [sample code](https://foss.heptapod.net/zilf/zilf/-/tree/branch/default/sample) to be compiled without issue.
+
 ## Playing a game
 
 For Catalina, [Gargoyle](https://github.com/garglk/garglk/releases), [v2023.1](https://github.com/garglk/garglk/releases/tag/2023.1), use `gargoyle-2023.1-mac-x64-mojave.dmg`. However, it made the fans of my MBP race within seconds of launching.
 
 [![Dragon running in Gargoyle][2]][2]
 
-I found [Spatterlight](https://github.com/angstsmurf/spatterlight/releases) to be a *lot* more lightweight, w.r.t. the fan speed.
+I found [Spatterlight](https://github.com/angstsmurf/spatterlight/releases) to be a *lot* more lightweight, w.r.t. the fan speed. Spatterlight v1.4.6 is my go-to ZILF runner.
 
 ## Fixing Zilf 1.4
 
@@ -1507,10 +1509,222 @@ Assembling
 Wrote 96972 bytes to zork1.z3
 ```
 
-It would be nice to add a `.zil` file containing a fix for the missing `'WORDS'`, rather than having to "hack" a compiled `.zap` file. After some random experimentation, I found that adding the following line in `zork1.zil` fixed the issue:
+It would be nice to add a `.zil` file containing a fix for the missing `'WORDS'`, rather than having to "hack" a compiled `.zap` file. After some random experimentation, and seeing the contents of `gmain.zil`, I found that adding the following line in `zork1.zil` fixed the issue:
 
 ```none
 <GLOBAL WORDS <>>
+```
+
+## `sed` script to change the `dotnet` target
+
+```none
+#!/bin/sh
+
+# Name: sed_for_zilf1.4.sh
+# Works on zilf *source code* version 1.4
+# Changes the "target framework" VERSION from 10 to whatever value you want:
+#VERSION="8"   # Works well
+VERSION="7"   # Some bugs
+#VERSION="6"   # Not tested
+#VERSION="5"   # Not tested
+#VERSION="3"   # Not tested
+
+
+
+subst () {
+  FILE=$1
+  sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+} 
+
+subst_s () {
+  FILE=$1
+  sed -i -e "s/<TargetFrameworks>net.\{1,\}\.0<\/TargetFrameworks>/<TargetFrameworks>net${VERSION}.0<\/TargetFrameworks>/" "${FILE}"
+} 
+
+subst_src () {
+  PART=$1
+  FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+  subst "${FILE}"
+} 
+
+subst_src_analyzers () {
+  PART=$1
+  FILE="${ZILF_SRC_DIR}src/Analyzers/${PART}/${PART}.csproj"
+  subst "${FILE}"
+} 
+
+subst_test () {
+  PART=$1
+  FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+  subst "${FILE}"
+} 
+
+# <TargetFramework>net8.0</TargetFramework>
+
+ZIL="zil"
+#LANG_VERSION="12"  # For dotnet v8
+LANG_VERSION="11"  # For dotnet v7
+INSTALL_DIR="~/ZILF/"
+INSTALL_DIR="/Users/macbook/ZILF/"
+DOTNET="dotnet"
+DOTNET_DIR="${INSTALL_DIR}${DOTNET}/"
+ZILF_SRC_DIR="${INSTALL_DIR}${ZIL}/"
+DOTNET_BUILD="${ZILF_SRC_DIR}/bin/Debug/net${VERSION}.0/"
+
+#FILE="ZilfAnalyzers.csproj"
+
+#sed -i -e 's/<TargetFramework>net8.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/' ZilfAnalyzers.csproj
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+#
+# Start here - src
+#
+
+PART="Zilf.Common"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+PART="Dezapf"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+PART="Zilf.Emit"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+PART="Zapf.Parsing"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+PART="Zilf.Playground"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+PART="Zilf"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+PART="WindowsInstaller"
+FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+sed -i -e "s/<TargetFramework>net.\{1,\}\.0-windows<\/TargetFramework>/<TargetFramework>net${VERSION}.0-windows<\/TargetFramework>/" "${FILE}"
+
+#subst_src "${PART}"
+
+PART="Zapf"
+#FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src "${PART}"
+
+#
+# Start here - src/Analyzers
+#
+
+PART="ZilfAnalyzers"
+#FILE="${ZILF_SRC_DIR}src/Analyzers/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_src_analyzers "${PART}"
+
+PART="ZilfAnalyzers.Test"
+FILE="${ZILF_SRC_DIR}src/Analyzers/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFrameworks>net.\{1,\}\.0<\/TargetFrameworks>/<TargetFrameworks>net${VERSION}.0<\/TargetFrameworks>/" "${FILE}"
+
+#subst_src_analyzers "${PART}"
+subst_s "${FILE}"
+
+#
+# Start here - test
+#
+
+PART="Zilf.Tests.Integration"
+#FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_test "${PART}"
+
+PART="Zilf.Emit.Tests"
+#FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_test "${PART}"
+
+PART="Zilf.Tests"
+#FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_test "${PART}"
+
+PART="Dezapf.Tests"
+#FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_test "${PART}"
+
+PART="Zapf.Tests"
+#FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_test "${PART}"
+
+PART="Zilf.Common.Tests"
+#FILE="${ZILF_SRC_DIR}test/${PART}/${PART}.csproj"
+#sed -i -e "s/<TargetFramework>net.\{1,\}\.0<\/TargetFramework>/<TargetFramework>net${VERSION}.0<\/TargetFramework>/" "${FILE}"
+
+subst_test "${PART}"
+
+#
+# Start here - WebAssembly
+#
+
+PART="Zilf.Playground"
+FILE="${ZILF_SRC_DIR}src/${PART}/${PART}.csproj"
+
+sed -i -e "s/<PackageReference Include=\"Microsoft\.AspNetCore\.Components\.WebAssembly\" Version=\".\{1,\}\.0\.0\" \/>/<PackageReference Include=\"Microsoft.AspNetCore.Components.WebAssembly\" Version=\"${VERSION}.0.0\" \/>/" "${FILE}"
+
+sed -i -e "s/<PackageReference Include=\"Microsoft\.AspNetCore\.Components\.WebAssembly\.DevServer\" Version=\".\{1,\}\.0\.0\" PrivateAssets=\"all\" \/>/<PackageReference Include=\"Microsoft.AspNetCore.Components.WebAssembly.DevServer\" Version=\"${VERSION}.0.0\" PrivateAssets=\"all\" \/>/" "${FILE}"
+
+sed -i -e "s/<PackageReference Include=\"Microsoft\.AspNetCore\.WebUtilities\" Version=\".\{1,\}\.0\.0\" \/>/<PackageReference Include=\"Microsoft.AspNetCore.WebUtilities\" Version=\"${VERSION}.0.0\" \/>/" "${FILE}"
+
+
+#
+# Start here - lang
+#
+
+FILE="${ZILF_SRC_DIR}Directory.Build.props"
+sed -i -e "s/<LangVersion>.\{1,\}<\/LangVersion>/<LangVersion>${LANG_VERSION}.0<\/LangVersion>/" "${FILE}"
+
+
+exit;
+
+src/Zilf.Common/Zilf.Common.csproj
+src/Dezapf/Dezapf.csproj
+src/Zilf.Emit/Zilf.Emit.csproj
+src/Zapf.Parsing/Zapf.Parsing.csproj
+src/Zilf.Playground/Zilf.Playground.csproj
+src/Zilf/Zilf.csproj
+src/WindowsInstaller/WindowsInstaller.csproj
+src/Zapf/Zapf.csproj
+src/Analyzers/ZilfAnalyzers/ZilfAnalyzers.csproj
+src/Analyzers/ZilfAnalyzers.Test/ZilfAnalyzers.Test.csproj
+test/Zilf.Tests.Integration/Zilf.Tests.Integration.csproj
+test/Zilf.Emit.Tests/Zilf.Emit.Tests.csproj
+test/Zilf.Tests/Zilf.Tests.csproj
+test/Dezapf.Tests/Dezapf.Tests.csproj
+test/Zapf.Tests/Zapf.Tests.csproj
+test/Zilf.Common.Tests/Zilf.Common.Tests.csproj
 ```
 
 ## Gotchas and conclusion
@@ -1545,9 +1759,10 @@ However, to finish off a build, by using `zapf`, you will need to copy some file
 
 Or just use the makefile to install both `zilf` and `zapf` correctly, into `/usr/local/bin/`.
 
-
+[![Never answer the phone][3]][3]
 
 
  
   [1]: xtras/images/MicroSoftCoreDamaged.png "Microsoft Core damaged dialog"
   [2]: xtras/images/DragonRunningInGargoyle.png "Dragon running in Gargoyle"
+  [3]: xtras/images/Mem2.jpg "Never answer the phone"
